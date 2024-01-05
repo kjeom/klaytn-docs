@@ -44,15 +44,13 @@ web3_legacy_value_transfer_sign_recover()
 ```zsh output
 ❯ python txTypeLegacyTransaction.py
 0xa02e0i90faef4323cb542312de9aac0
-0xa02e0i90faef4323cb542312de9aac0
-0xa02e0i90faef4323cb542312de9aac0
 ```
 
 </CH.Code>
 
 ---
 
-Import the `web3py_ext` and needed packages that can interact with the Ethereum Blockchain and its ecosystem.
+Import the `web3py_ext` and needed packages that can interact with the blockchain and its ecosystem. (Add) web3py-ext supports some utils
 
 ```python txTypeLegacyTransaction.py focus=1:10
 
@@ -60,7 +58,7 @@ Import the `web3py_ext` and needed packages that can interact with the Ethereum 
 
 ---
 
-Setup the provider. A **Provider** in web3 is a read-only abstraction to access the blockchain data.
+Setup the web3 provider with baobab public RPC URL
 ```python txTypeLegacyTransaction.py focus=12
 
 ```
@@ -72,11 +70,11 @@ The **from_key** method create account instance.
 
 ```
 ---
-Define transaction data
+Define transaction data with only **from**, **to**, **value** fields
 ``` python txTypeLegacyTransaction.py focus=15:19
 ```
 ---
-The **fill_transaction** method create value tranfer tx.
+The **fill_transaction** method will auto-complete some fields like nonce, gas, …
 
 ```python txTypeLegacyTransaction.py focus=20
 
@@ -88,7 +86,7 @@ The **sign_transaction** method sign transaction by account instance.
 
 ```
 ---
-The **recover_transaction** method get recovered tx.
+The **recover_transaction** method get recovered tx and return the address. which signed the tx.
 
 ```python txTypeLegacyTransaction.py focus=23:24
 
@@ -100,14 +98,15 @@ The **decode_transaction** method decode tx from rawTransaction.
 
 ```
 ---
-The **send_raw_transaction** method send transaction signed into blockchain.
+The **send_raw_transaction** method send the tx to the blockchain.
 
 ```python txTypeLegacyTransaction.py focus=27
 
 ```
 ---
 
-The **wait_for_transaction_receipt** method returns the receipt of transaction.
+The **wait_for_transaction_receipt** method returns the receipt of transaction if it is arrived.
+(Add) If you want to get the pretty output format, use the 'to_pretty' util
 
 ```python txTypeLegacyTransaction.py focus=28
 
@@ -116,10 +115,12 @@ The **wait_for_transaction_receipt** method returns the receipt of transaction.
 
 Finally, get the result.
 <CH.Code>
+```python txTypeLegacyTransaction.py focus=29
 
+```
+---
 ```zsh output
 ❯ node txTypeLegacyTransaction.py
-0xa02e0i90faef4323cb542312de9aac0
 0xa02e0i90faef4323cb542312de9aac0
 ```
 
