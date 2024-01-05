@@ -84,14 +84,14 @@ async function main() {
     'https://klaytn-mainnet-rpc.allthatnode.com:8551'
   )
   const wallet = new Wallet(senderPriv, provider)
-  let tx = {
+  const tx = {
     to: recieverAddr,
-    value: 100000000000,
+    value: parseKlay("100000000000"),
     from: senderAddr,
   }
-  let sentTx = await wallet.sendTransaction(tx)
+  const sentTx = await wallet.sendTransaction(tx)
   console.log('sentTx', sentTx)
-  let rc = await sentTx.wait()
+  const rc = await sentTx.wait()
   console.log('receipt', rc)
 }
 main()

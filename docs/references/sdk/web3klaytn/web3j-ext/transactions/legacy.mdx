@@ -37,18 +37,6 @@ public class LegacyExample implements keySample {
                 BigInteger nonce = web3j.ethGetTransactionCount(from, DefaultBlockParameterName.LATEST).send()
                                 .getTransactionCount();
                 BigInteger value = BigInteger.valueOf(100);
-                // send legacy transaction with web3j-credentials
-                RawTransaction raw = KlayRawTransaction.createEtherTransaction(
-                                nonce,
-                                GAS_PRICE,
-                                GAS_LIMIT,
-                                to,
-                                value);
-                byte[] signedMessage = KlayTransactionEncoder.signMessage(raw, chainId, credentials);
-                String hexValue = Numeric.toHexString(signedMessage);
-                EthSendTransaction transactionResponse = web3j.ethSendRawTransaction(hexValue).send();
-                System.out.println(transactionResponse.getResult());
-                // send legacy transaction with web3j-ext klaycredentials
                 raw = KlayRawTransaction.createEtherTransaction(
                                 nonce,
                                 GAS_PRICE,
@@ -131,59 +119,32 @@ Define value of transaction
 
 ```
 ---
-Send legacy transaction with web3j-credentials
-Create raw transaction with web3j-credentials.
+Create raw transaction
 
-```java txTypeLegacyTransaction.java focus=32:37
-
-```
----
-Sign transaction with web3j-credentials and encode to Hex string.
-
-```java txTypeLegacyTransaction.java focus=38:39
-
-```
----
-ethSendRawTransaction send signed transaction with web3j-credentials.
-
-```java txTypeLegacyTransaction.java focus=40:41
-
-```
----
-
-Send transaction into blockchain with web3j-ext klaycredentials. 
-Create raw transaction with with web3j-ext klaycredentials.
-
-```java txTypeLegacyTransaction.java focus=42:48
+```java txTypeLegacyTransaction.java focus=31:36
 
 ```
 ---
 Sign transaction with with web3j-ext klaycredentials and encode to Hex string.
 
-```java txTypeLegacyTransaction.java focus=49:50
+```java txTypeLegacyTransaction.java focus=37:38
 
 ```
 ---
-ethSendRawTransaction send signed transaction with web3j-credentials.
+**ethSendRawTransaction** method send signed transaction with web3j-credentials.
 
-```java txTypeLegacyTransaction.java focus=51:53
+```java txTypeLegacyTransaction.java focus=39:40
 
 ```
 ---
-Shut down web3j instance
 
-```java txTypeLegacyTransaction.java focus=60:61
-```
----
-
-Finally, get the receipt hash.
+Get the receipt hash.
 
 <CH.Code>
 
-```java txTypeLegacyTransaction.java focus=59:60
+```java txTypeLegacyTransaction.java focus=47:48
 
 ```
-
 ---
 
 ```zsh output
@@ -192,5 +153,10 @@ Finally, get the receipt hash.
 ```
 
 </CH.Code>
+---
+Finally, Shut down web3j instance
+
+```java txTypeLegacyTransaction.java focus=49
+```
 
 </CH.Spotlight>
