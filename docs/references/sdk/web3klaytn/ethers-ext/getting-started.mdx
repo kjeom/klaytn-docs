@@ -1,0 +1,57 @@
+# Ethers.js extension for Klaytn
+
+## Install
+```
+npm install --save @klaytn/ethers-ext
+```
+
+## Start
+
+### Create file
+```js fee-delegated-value-transfer.js
+const ethers = require("ethers");
+const { Wallet } = require("@klaytn/ethers-ext");
+const fs = require('fs');
+
+const provider = new ethers.providers.JsonRpcProvider('https://public-en-baobab.klaytn.net')
+
+async function main() {
+
+  const userWallet = new Wallet(
+    "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8", 
+    provider
+  );
+
+  let tx = {
+    type: 9,    
+    to: reciever,
+    value: 1e12,
+    from: sender,
+  }; 
+
+  tx = await userWallet.populateTransaction(tx);
+  console.log(tx);
+
+  const senderTxHashRLP = await userWallet.signTransaction(tx);
+
+  const feePayerWallet = new Wallet(
+    "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8",
+    provider
+  );
+
+  const tx = objectFromRLP( senderTxHashRLP );
+
+  tx.feePayer = feePayer;
+  console.log(tx);
+  const sentTx = await feePayerWallet.sendTransactionAsFeePayer(tx);
+  console.log('sentTx', sentTx);
+  const rc = await sentTx.wait();
+  console.log('receipt', rc);
+}
+main();
+```
+### Run
+
+```
+node fee-delegated-value-transfer.js
+```
