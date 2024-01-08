@@ -25,9 +25,9 @@ import org.web3j.protocol.klaytn.core.method.response.TransactionReceipt;
 
 public class LegacyExample implements keySample {
         public static void run() throws IOException {
-                Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
-                KlayCredentials klaycredentials = KlayCredentials.create(keySample.LEGACY_KEY_privkey);
-                Credentials credentials = Credentials.create(LEGACY_KEY_privkey);
+                Web3j web3j = Web3j.build(new HttpService("https://public-en-baobab.klaytn.net"));
+                KlayCredentials klaycredentials = KlayCredentials.create("0x4a72b3d09c3d5e28e8652e0111f9c4ce252e8299aad95bb219a38eb0a3f4da49");
+                Credentials credentials = Credentials.create("0x4a72b3d09c3d5e28e8652e0111f9c4ce252e8299aad95bb219a38eb0a3f4da49");
                 BigInteger GAS_PRICE = BigInteger.valueOf(50000000000L);
                 BigInteger GAS_LIMIT = BigInteger.valueOf(6721950);
                 String from = credentials.getAddress();
