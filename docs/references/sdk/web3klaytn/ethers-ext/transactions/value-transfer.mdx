@@ -1,0 +1,241 @@
+# Value Transfer
+TxTypeValueTransfer is used when a user wants to send KLAY.
+
+- As Klaytn provides multiple transaction types to make each transaction type serve a single purpose, TxTypeValueTransfer is limited to send KLAY to an externally owned account (EOA).
+# Basic
+<CH.Spotlight>
+<CH.Code>
+
+```js txTypeValueTransferTransaction.js
+const ethers = require("ethers");
+const { Wallet } = require("@klaytn/ethers-ext");
+
+const recieverAddr = '0xc40b6909eb7085590e1c26cb3becc25368e249e9' 
+const senderAddr = '0xa2a8854b1802d8cd5de631e690817c253d6a9153' 
+const senderPriv = '0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8' 
+
+async function main() {
+  const provider = new ethers.providers.JsonRpcProvider('https://public-en-baobab.klaytn.net')
+  const wallet = new Wallet(senderPriv, provider);
+
+  let tx = {
+      type: 8,
+      to: recieverAddr,
+      value: 1e11,
+      from: senderAddr,
+    }; 
+  
+  const sentTx = await wallet.sendTransaction(tx);
+  console.log('sentTx', sentTx);
+
+  const rc = await sentTx.wait();
+  console.log('receipt', rc);
+}
+
+main();
+```
+---
+```zsh output
+❯ node txTypeLegacyTransaction.js
+3.523785565427238379
+0xa02e0i90faef4323cb542312de9aac0
+```
+</CH.Code>
+
+---
+
+Import the `ethers` package that can interact with the Ethereum Blockchain and its ecosystem.
+
+```js txTypeValueTransferTransaction.js focus=1
+
+```
+
+---
+Import the `Wallet` class from `@klaytn/ethers-ext`  that can init wallet instance by private key
+```js txTypeValueTransferTransaction.js focus=2
+
+```
+
+---
+Define sender address, sender private key and reciever address
+```js txTypeValueTransferTransaction.js focus=3:6
+
+```
+
+---
+
+Setup the provider. A **Provider** in ethers is a read-only abstraction to access the blockchain data.
+
+```js txTypeValueTransferTransaction.js focus=8:10
+
+```
+---
+Declare transaction params such as type, from, to, value. Such params can be found here [link]
+
+```js txTypeValueTransferTransaction.js focus=12:17
+
+```
+---
+
+Send a transaction to Klay.
+
+<CH.Code>
+
+```js txTypeValueTransferTransaction.js focus=19:21
+
+```
+
+---
+
+```zsh output
+❯ node txTypeValueTransferTransaction.js
+sentTx tx123
+```
+
+</CH.Code>
+---
+Wait for the transaction receipt.
+
+<CH.Code>
+
+```js txTypeValueTransferTransaction.js focus=22:24
+
+```
+
+---
+
+```zsh output
+❯ node txTypeValueTransferTransaction.js
+receipt 123
+```
+
+</CH.Code>
+
+
+---
+
+
+
+
+</CH.Spotlight>
+
+# Fee Delegation
+
+<CH.Spotlight>
+<CH.Code>
+
+```js TxTypeFeeDelegatedValueTransfer.js
+const { Wallet, TxType, parseKlay } = require("@klaytn/ethers-ext");
+const ethers = require("ethers");
+
+const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
+const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+const feePayerAddr = "0xcb0eb737dfda52756495a5e08a9b37aab3b271da";
+const feePayerPriv = "0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4";
+const recieverAddr = "0xc40b6909eb7085590e1c26cb3becc25368e249e9";
+
+async function main() {
+  const provider = new ethers.providers.JsonRpcProvider("https://public-en-baobab.klaytn.net");
+  const senderWallet = new Wallet(senderPriv, provider);
+  const feePayerWallet = new Wallet(feePayerPriv, provider);
+
+  let tx = {
+    type: TxType.FeeDelegatedValueTransfer,
+    to: recieverAddr,
+    value: parseKlay("0.01"),
+    from: senderAddr,
+  };
+
+  tx = await senderWallet.populateTransaction(tx);
+  console.log(tx);
+
+  const senderTxHashRLP = await senderWallet.signTransaction(tx);
+  console.log("senderTxHashRLP", senderTxHashRLP);
+
+  const sentTx = await feePayerWallet.sendTransactionAsFeePayer(senderTxHashRLP);
+  console.log("sentTx", sentTx);
+
+  const rc = await sentTx.wait();
+  console.log("receipt", rc);
+}
+
+main();
+
+```
+
+
+
+
+---
+```zsh output
+❯ node TxTypeFeeDelegatedValueTransfer.js
+output
+```
+</CH.Code>
+
+
+
+
+
+
+---
+
+Importing necessary modules from external libraries
+```js TxTypeFeeDelegatedValueTransfer.js focus=1:2
+
+```
+---
+
+Declaring constant variables for sender and fee payer addresses and private keys
+```js TxTypeFeeDelegatedValueTransfer.js focus=4:8
+
+```
+---
+
+Creating a JSON-RPC provider instance with the specified URL
+```js TxTypeFeeDelegatedValueTransfer.js focus=11:13
+
+```
+---
+
+Creating a transaction object
+```js TxTypeFeeDelegatedValueTransfer.js focus=15:20
+
+```
+---
+
+Populating transaction with additional information
+```js TxTypeFeeDelegatedValueTransfer.js focus=22:23
+
+```
+---
+
+Signing the transaction with the sender's private key
+```js TxTypeFeeDelegatedValueTransfer.js focus=25:26
+
+```
+---
+
+Sending the transaction as the fee payer
+```js TxTypeFeeDelegatedValueTransfer.js focus=28:29
+
+```
+---
+Wait for the transaction receipt.
+
+<CH.Code>
+
+```js TxTypeFeeDelegatedValueTransfer.js focus=31:32
+
+```
+
+---
+
+```zsh output
+❯ node TxTypeFeeDelegatedValueTransfer.js
+receipt 123
+```
+
+</CH.Code>
+</CH.Spotlight>
+

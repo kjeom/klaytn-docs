@@ -1,0 +1,242 @@
+# Value Transfer With Memo
+**TxTypeValueTransferMemo** is used when a user wants to send KLAY with a specific message.
+
+# Basic
+<CH.Spotlight>
+    <CH.Code>
+
+``` js TxTypeValueTransferMemo.js
+const ethers = require("ethers");
+const { Wallet } = require("@klaytn/ethers-ext");
+
+const recieverAddr = '0xc40b6909eb7085590e1c26cb3becc25368e249e9' 
+const senderAddr = '0xa2a8854b1802d8cd5de631e690817c253d6a9153' 
+const senderPriv = '0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8' 
+
+async function main() {
+  const provider = new ethers.providers.JsonRpcProvider('https://public-en-baobab.klaytn.net')
+  const wallet = new Wallet(senderPriv, provider);
+
+  const tx = {
+      type: 0x10,         
+      to: recieverAddr,
+      value: 1e12,
+      from: senderAddr,
+      input: "0x1234567890",
+    }; 
+  
+  const sentTx = await wallet.sendTransaction(tx);
+  console.log('sentTx', sentTx);
+
+  const rc = await sentTx.wait();
+  console.log('receipt', rc);
+}
+
+main();
+```
+</CH.Code>
+---
+
+Import required packages like: ethers, klaytn wallet...
+
+```js TxTypeValueTransferMemo.js focus=1:2
+
+```
+---
+Define sender address, sender private key and reciever address
+```js TxTypeValueTransferMemo.js focus=3:6
+
+```
+---
+
+Setup the provider. A **Provider** in ethers is a read-only abstraction to access the blockchain data.
+
+```js TxTypeValueTransferMemo.js focus=9:9
+
+```
+---
+
+Declare your wallet.
+
+```js TxTypeValueTransferMemo.js focus=10:10
+
+```
+---
+
+Declare transaction params: type, from, to ,value, input.
+
+```js TxTypeValueTransferMemo.js focus=12:18
+```
+
+---
+
+Send the transaction to blockchain
+
+<CH.Code>
+
+```js TxTypeValueTransferMemo.js focus=19:21
+
+```
+
+---
+
+```zsh output
+❯ node TxTypeValueTransferMemo.js
+sentTx tx123
+```
+
+</CH.Code>
+
+---
+
+Wait for the transaction receipt.
+
+<CH.Code>
+
+```js TxTypeValueTransferMemo.js focus=22:24
+
+```
+
+---
+
+```zsh output
+❯ node TxTypeValueTransferMemo.js
+receipt tx123
+```
+
+</CH.Code>
+---
+</CH.Spotlight>
+
+# Fee Delegation
+
+<CH.Spotlight>
+    <CH.Code>
+
+``` js TxTypeFeeDelegatedValueTransferMemo.js
+const { Wallet, TxType, parseKlay } = require("@klaytn/ethers-ext");
+const ethers = require("ethers");
+
+const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
+const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+const feePayerAddr = "0xcb0eb737dfda52756495a5e08a9b37aab3b271da";
+const feePayerPriv = "0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4";
+const recieverAddr = "0xc40b6909eb7085590e1c26cb3becc25368e249e9";
+
+async function main() {
+  const provider = new ethers.providers.JsonRpcProvider("https://public-en-baobab.klaytn.net");
+  const senderWallet = new Wallet(senderPriv, provider);
+  const feePayerWallet = new Wallet(feePayerPriv, provider);
+
+  let tx = {
+    type: TxType.FeeDelegatedValueTransferMemo,
+    to: recieverAddr,
+    value: parseKlay("0.01"),
+    from: senderAddr,
+    input: "0x1234567890",
+  };
+
+  tx = await senderWallet.populateTransaction(tx);
+  console.log(tx);
+
+  const senderTxHashRLP = await senderWallet.signTransaction(tx);
+  console.log("senderTxHashRLP", senderTxHashRLP);
+
+  const sentTx = await feePayerWallet.sendTransactionAsFeePayer(senderTxHashRLP);
+  console.log("sentTx", sentTx);
+
+  const rc = await sentTx.wait();
+  console.log("receipt", rc);
+}
+
+main();
+```
+</CH.Code>
+---
+
+Importing necessary modules from external libraries
+
+```js TxTypeFeeDelegatedValueTransferMemo.js focus=1:2
+
+```
+---
+Declaring variables for sender and fee payer addresses and private keys
+```js TxTypeFeeDelegatedValueTransferMemo.js focus=4:8
+
+```
+---
+
+Creating a JSON-RPC provider instance with the specified URL
+
+```js TxTypeFeeDelegatedValueTransferMemo.js focus=11
+
+```
+---
+
+Creating a wallet for the sender
+
+```js TxTypeFeeDelegatedValueTransferMemo.js focus=12
+
+```
+---
+
+
+Creating a wallet for the fee payer
+
+```js TxTypeFeeDelegatedValueTransferMemo.js focus=13
+
+```
+---
+Creating a transaction object
+
+```js TxTypeFeeDelegatedValueTransferMemo.js focus=15:21
+```
+---
+Populating transaction with additional information
+
+```js TxTypeFeeDelegatedValueTransferMemo.js focus=23:24
+```
+---
+Signing the transaction with the sender's private key
+
+```js TxTypeFeeDelegatedValueTransferMemo.js focus=26:27
+```
+---
+
+Sending the transaction as the fee payer
+
+<CH.Code>
+
+```js TxTypeFeeDelegatedValueTransferMemo.js focus=29:30
+
+```
+
+---
+
+```zsh output
+❯ node TxTypeFeeDelegatedValueTransferMemo.js
+sentTx tx123
+```
+
+</CH.Code>
+
+---
+
+Wait for the transaction receipt.
+
+<CH.Code>
+
+```js TxTypeFeeDelegatedValueTransferMemo.js focus=32:33
+
+```
+
+---
+
+```zsh output
+❯ node TxTypeFeeDelegatedValueTransferMemo.js
+receipt tx123
+```
+
+</CH.Code>
+---
+</CH.Spotlight>

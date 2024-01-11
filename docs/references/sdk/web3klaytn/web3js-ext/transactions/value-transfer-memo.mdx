@@ -1,0 +1,216 @@
+# Value Transfer Memo
+**TxTypeValueTransferMemo** is used when a user wants to send KLAY with a specific message.
+
+# Basic
+
+<CH.Spotlight>
+<CH.Code>
+
+```js TxTypeValueTransferMemo.js
+const { KlaytnWeb3, TxType, toPeb } = require("@klaytn/web3js-ext");
+const { Web3 } = require("web3");
+
+const recieverAddr = "0xc40b6909eb7085590e1c26cb3becc25368e249e9";
+const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
+const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+
+async function main() {
+  const provider = new Web3.providers.HttpProvider("https://public-en-baobab.klaytn.net");
+  const web3 = new KlaytnWeb3(provider);
+  const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
+
+  const tx = {
+    type: TxType.ValueTransferMemo,
+    from: senderAddr,
+    to: recieverAddr,
+    value: toPeb("0.01"),
+    gasLimit: 50000,
+    data: "0x1234567890",
+  };
+
+  const signResult = await senderAccount.signTransaction(tx);
+  console.log("rawTx", signResult.rawTransaction);
+
+  const receipt = await web3.eth.sendSignedTransaction(signResult.rawTransaction);
+  console.log("receipt", receipt);
+}
+
+main();
+
+```
+
+
+
+
+---
+```zsh output
+❯ node TxTypeValueTransferMemo.js
+output
+```
+</CH.Code>
+
+
+
+
+
+
+---
+
+Import required modules from libraries.
+
+```node TxTypeValueTransferMemo.js focus=1:2
+
+```
+---
+
+Set the receiver and sender addresses and sender's private key.
+```node TxTypeValueTransferMemo.js focus=4:6
+
+```
+---
+
+Define the transaction object.
+```node TxTypeValueTransferMemo.js focus=13:20
+
+```
+---
+
+Sign the transaction with the sender's account.
+
+```node TxTypeValueTransferMemo.js focus=22
+
+```
+---
+
+Send the signed transaction to the Klaytn network.
+
+```node TxTypeValueTransferMemo.js focus=25:26
+
+```
+---
+
+
+</CH.Spotlight>
+
+
+# Fee Delegation
+
+
+<CH.Spotlight>
+<CH.Code>
+
+```js TxTypeFeeDelegatedValueTransferMemo.js
+const { KlaytnWeb3, TxType, toPeb, parseTransaction } = require("@klaytn/web3js-ext");
+const { Web3 } = require("web3");
+
+const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
+const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+const feePayerAddr = "0xcb0eb737dfda52756495a5e08a9b37aab3b271da";
+const feePayerPriv = "0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4";
+const recieverAddr = "0xc40b6909eb7085590e1c26cb3becc25368e249e9";
+
+async function main() {
+  const provider = new Web3.providers.HttpProvider("https://public-en-baobab.klaytn.net");
+  const web3 = new KlaytnWeb3(provider);
+  const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
+
+  let tx = {
+    type: TxType.FeeDelegatedValueTransferMemo,
+    from: senderAddr,
+    to: recieverAddr,
+    value: toPeb("0.01"),
+    data: "0x1234567890",
+    gasLimit: 50000,
+  };
+
+  const signResult1 = await senderAccount.signTransaction(tx);
+  console.log("senderRawTx", signResult1.rawTransaction);
+  console.log("senderTx", parseTransaction(signResult1.rawTransaction));
+
+  // Next step is usually done in the backend by the service provider.
+  // But for the sake of demonstration, feePayer signature is done here.
+
+  const feePayerAccount = web3.eth.accounts.privateKeyToAccount(feePayerPriv);
+  const signResult2 = await feePayerAccount.signTransactionAsFeePayer(signResult1.rawTransaction);
+  console.log("rawTx", signResult2.rawTransaction);
+  console.log("tx", parseTransaction(signResult2.rawTransaction));
+
+  const receipt = await web3.eth.sendSignedTransaction(signResult2.rawTransaction);
+  console.log("receipt", receipt);
+}
+
+main();
+
+```
+
+
+
+
+---
+```zsh output
+❯ node TxTypeFeeDelegatedValueTransferMemo.js
+output
+```
+</CH.Code>
+
+
+
+
+
+
+---
+
+Import required modules from libraries.
+
+```js TxTypeFeeDelegatedValueTransferMemo.js focus=1:2
+
+```
+
+---
+Set addresses and private keys for sender, fee payer, and receiver.
+
+```js TxTypeFeeDelegatedValueTransferMemo.js focus=4:8
+
+```
+---
+Create a Web3 provider connected to the BAOBAB testnet.
+
+```js TxTypeFeeDelegatedValueTransferMemo.js focus=11:12
+
+```
+---
+Convert sender's private key to an account using KlaytnWeb3.
+
+```js TxTypeFeeDelegatedValueTransferMemo.js focus=13
+
+```
+---
+
+Define the transaction object.
+```js TxTypeFeeDelegatedValueTransferMemo.js focus=15:22
+
+```
+---
+
+Sign the transaction with the sender's account.
+```js TxTypeFeeDelegatedValueTransferMemo.js focus=24:26
+
+```
+---
+Convert fee payer's private key to an account using KlaytnWeb3.
+
+```js TxTypeFeeDelegatedValueTransferMemo.js focus=31
+
+```
+---
+Sign the transaction as the fee payer.
+
+```js TxTypeFeeDelegatedValueTransferMemo.js focus=32:34
+
+```
+---
+Send the signed transaction with both signatures to the Klaytn network.
+```js TxTypeFeeDelegatedValueTransferMemo.js focus=36:37
+
+```
+</CH.Spotlight>
