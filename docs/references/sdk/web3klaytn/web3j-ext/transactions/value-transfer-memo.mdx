@@ -151,11 +151,23 @@ Sign the raw transaction with the sender's private key.
 ```
 ---
 Send the signed transaction to the Klaytn node.
+ <CH.Code>
 ```java ValueTransferMemo.java focus=59:60
 
 ```
+
+
+
+---
+
+```zsh output
+❯ java ValueTransferMemo.java
 TxHash : 
  0xacd91fd0ab27fddfe7e68f32eb7e87285ea3ad58f04bbb49fc30e20093930c30
+```
+
+</CH.Code>
+
 ---
 Retrieve and print the transaction receipt.
 <CH.Code>
