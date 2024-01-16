@@ -80,7 +80,6 @@ public class ValueTransferMemoExample implements keySample {
     }
 
 }
-
 ```
 
 
@@ -155,11 +154,58 @@ Send the signed transaction to the Klaytn node.
 ```java ValueTransferMemo.java focus=59:60
 
 ```
+TxHash : 
+ 0xacd91fd0ab27fddfe7e68f32eb7e87285ea3ad58f04bbb49fc30e20093930c30
 ---
 Retrieve and print the transaction receipt.
+<CH.Code>
 ```java ValueTransferMemo.java focus=61:68
 
 ```
+
+
+
+
+---
+
+```zsh output
+❯ java ValueTransferMemo.java
+receipt : 
+class TransactionReceipt {
+    blockHash: 0xfe2bade86f8cf8fb894d3f1935b59aaa3022f3332437a9797d6877735cbcd4ad
+    blockNumber: 0x89285f8
+    codeFormat: null
+    contractAddress: null
+    feePayer: null
+    feeRatio: null
+    from: 0xa2a8854b1802d8cd5de631e690817c253d6a9153
+	at org.example.ToRun.run(ToRun.java:78)
+    gas: 0x66919e
+	at org.example.Main.main(Main.java:10)
+    effectiveGasPrice: 0x5d21dba00
+    gasPrice: 0xba43b7400
+    gasUsed: 0x56b8
+    humanReadable: null
+    key: null
+    input: 0x4b6c6179746e20576562336a
+    logs: []
+    logsBloom: 0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+    nonce: 0x30b
+    senderTxHash: 0xacd91fd0ab27fddfe7e68f32eb7e87285ea3ad58f04bbb49fc30e20093930c30
+    signature: []
+    status: 0x1
+    txError: null
+    to: 0x000000000000000000000000000000000000dead
+    transactionHash: 0xacd91fd0ab27fddfe7e68f32eb7e87285ea3ad58f04bbb49fc30e20093930c30
+    transactionIndex: 0x1
+    type: TxTypeValueTransferMemo
+    typeInt: 16
+    value: 0x64
+}
+```
+
+</CH.Code>
+
 ---
 Shutdown the Web3j instance.
 ```java ValueTransferMemo.java focus=69
@@ -167,9 +213,20 @@ Shutdown the Web3j instance.
 ```
 ---
 Decode the raw transaction to get the transaction type.
+<CH.Code>
 ```java ValueTransferMemo.java focus=71:72
 
 ```
+
+
+---
+
+```zsh output
+❯ java ValueTransferMemo.java
+TxType: VALUE_TRANSFER_MEMO
+```
+
+</CH.Code>
 
 </CH.Spotlight>
 
@@ -321,18 +378,75 @@ Sign the same message as the fee payer.
 ```java FeeDelegatedValueTransferMemo.java focus=54:55
 
 ```
+
 ---
 Send the signed transaction to the Klaytn node.
+<CH.Code>
 
 ```java FeeDelegatedValueTransferMemo.java focus=57:59
 
 ```
+
+
+---
+
+```zsh output
+❯ java FeeDelegatedValueTransferMemo.java
+TxHash : 
+ 0x3daa6c374bcd7407ff7dbd1403e9644d3551de8968601e5ab6fb779baf8caf19
+```
+
+</CH.Code>
+
 ---
 Retrieve and print the transaction receipt.
+<CH.Code>
 
 ```java FeeDelegatedValueTransferMemo.java focus=60:67
 
 ```
+
+---
+
+```zsh output
+❯ java FeeDelegatedValueTransferMemo.java
+receipt : 
+class TransactionReceipt {
+    blockHash: 0x986bc12a221e2cdd6d646675986821212249cdb537386c5efb575559bb45cfd1
+    blockNumber: 0x89286a8
+    codeFormat: null
+    contractAddress: null
+    feePayer: 0xcb0eb737dfda52756495a5e08a9b37aab3b271da
+    feePayerSignatures: [class TransactionReceiptFeePayerSignaturesInner {
+        V: 0x7f6
+        R: 0x1f7027dcdd5a646d80e2684fca72ec2c000636925c2c0b81c2f07eba767296c8
+        S: 0x3d53dd1f3322d474c5386e149cfbba7e0d141e5c903a0dfe5b306f610691e5f2
+    }]
+    feeRatio: null
+    from: 0xa2a8854b1802d8cd5de631e690817c253d6a9153
+    gas: 0x66919e
+    gasPrice: 0xba43b7400
+    gasUsed: 0x7dc8
+    key: null
+    input: 0x4b6c6179746e20576562336a
+    logs: []
+    logsBloom: 0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+    nonce: 0x30c
+    senderTxHash: 0x121add23a85c6871d48bc097ad70d6bd0e4f65537a725c5030c13b17f31f2912
+    signature: []
+    status: 0x1
+    txError: null
+    to: 0x000000000000000000000000000000000000dead
+    transactionHash: 0x3daa6c374bcd7407ff7dbd1403e9644d3551de8968601e5ab6fb779baf8caf19
+    transactionIndex: 0x0
+    type: TxTypeFeeDelegatedValueTransferMemo
+    typeInt: 17
+    value: 0x64
+}
+```
+
+</CH.Code>
+
 ---
 Shutdown the Web3j instance.
 
@@ -341,9 +455,20 @@ Shutdown the Web3j instance.
 ```
 ---
 Decode the raw transaction to get the transaction type.
+<CH.Code>
 
 ```java FeeDelegatedValueTransferMemo.java focus=70:71
 
 ```
+
+
+---
+
+```zsh output
+❯ java FeeDelegatedValueTransferMemo.java
+txType: FEE_DELEGATED_VALUE_TRANSFER_MEMO
+```
+
+</CH.Code>
 
 </CH.Spotlight>

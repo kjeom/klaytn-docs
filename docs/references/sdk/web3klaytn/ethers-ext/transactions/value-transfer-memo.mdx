@@ -82,7 +82,27 @@ Send the transaction to blockchain
 
 ```zsh output
 ❯ node TxTypeValueTransferMemo.js
-sentTx tx123
+sentTx {
+  hash: '0x2ab415b5e4c354d74cb40c8c2054f9ec139ac629f233674abd40cca5697d53b3',
+  type: 0,
+  accessList: null,
+  blockHash: '0xef816e6444ce19135dfc64803eea5beb9966804ca0869043e287129145ff41ee',
+  blockNumber: 143450915,
+  transactionIndex: 0,
+  confirmations: 6,
+  from: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
+  gasPrice: BigNumber { _hex: '0x0ba43b7400', _isBigNumber: true },
+  gasLimit: BigNumber { _hex: '0xcd14', _isBigNumber: true },
+  to: '0xC40B6909EB7085590E1c26Cb3beCC25368e249E9',
+  value: BigNumber { _hex: '0x2386f26fc10000', _isBigNumber: true },
+  nonce: 761,
+  data: '0x1234567890',
+  r: '0x0a280da3d8f04ad42400d6ea5d1628aefc71f8b878b138b3ae2ab048218255df',
+  s: '0x0ad53d6637f5e122cd117b72f97a10cbde4e8bbeee08aa853b91afc3fa6ae98d',
+  v: 2038,
+  creates: null,
+  chainId: 1001,
+}
 ```
 
 </CH.Code>
@@ -101,7 +121,24 @@ Wait for the transaction receipt.
 
 ```zsh output
 ❯ node TxTypeValueTransferMemo.js
-receipt tx123
+receipt {
+  to: '0xC40B6909EB7085590E1c26Cb3beCC25368e249E9',
+  from: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
+  contractAddress: null,
+  transactionIndex: 0,
+  gasUsed: BigNumber { _hex: '0x53fc', _isBigNumber: true },
+  logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  blockHash: '0xef816e6444ce19135dfc64803eea5beb9966804ca0869043e287129145ff41ee',
+  transactionHash: '0x2ab415b5e4c354d74cb40c8c2054f9ec139ac629f233674abd40cca5697d53b3',
+  logs: [],
+  blockNumber: 143450915,
+  confirmations: 6,
+  cumulativeGasUsed: BigNumber { _hex: '0x53fc', _isBigNumber: true },
+  effectiveGasPrice: BigNumber { _hex: '0x05d21dba00', _isBigNumber: true },
+  status: 1,
+  type: 0,
+  byzantium: true
+}
 ```
 
 </CH.Code>
@@ -173,6 +210,48 @@ Creating a JSON-RPC provider instance with the specified URL
 ```
 ---
 
+Also, you can change the default provider. For example, using the alchemy provider.
+
+```js TxTypeFeeDelegatedValueTransferMemo.js focus=11
+const { Wallet, TxType, parseKlay } = require("@klaytn/ethers-ext");
+const ethers = require("ethers");
+
+const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
+const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+const feePayerAddr = "0xcb0eb737dfda52756495a5e08a9b37aab3b271da";
+const feePayerPriv = "0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4";
+const recieverAddr = "0xc40b6909eb7085590e1c26cb3becc25368e249e9";
+
+async function main() {
+  const provider = new ethers.providers.JsonRpcProvider("https://klaytn-mainnet-rpc.allthatnode.com:8551");
+  const senderWallet = new Wallet(senderPriv, provider);
+  const feePayerWallet = new Wallet(feePayerPriv, provider);
+
+  let tx = {
+    type: TxType.FeeDelegatedValueTransferMemo,
+    to: recieverAddr,
+    value: parseKlay("0.01"),
+    from: senderAddr,
+    input: "0x1234567890",
+  };
+
+  tx = await senderWallet.populateTransaction(tx);
+  console.log(tx);
+
+  const senderTxHashRLP = await senderWallet.signTransaction(tx);
+  console.log("senderTxHashRLP", senderTxHashRLP);
+
+  const sentTx = await feePayerWallet.sendTransactionAsFeePayer(senderTxHashRLP);
+  console.log("sentTx", sentTx);
+
+  const rc = await sentTx.wait();
+  console.log("receipt", rc);
+}
+
+main();
+```
+---
+
 Creating a wallet for the sender
 
 ```js TxTypeFeeDelegatedValueTransferMemo.js focus=12
@@ -191,16 +270,51 @@ Creating a transaction object
 
 ```js TxTypeFeeDelegatedValueTransferMemo.js focus=15:21
 ```
+
 ---
 Populating transaction with additional information
+<CH.Code>
 
 ```js TxTypeFeeDelegatedValueTransferMemo.js focus=23:24
 ```
+
+
+---
+
+```zsh output
+❯ node TxTypeFeeDelegatedValueTransferMemo.js
+{
+  type: 17,
+  to: '0xc40b6909eb7085590e1c26cb3becc25368e249e9',
+  value: BigNumber { _hex: '0x2386f26fc10000', _isBigNumber: true },
+  from: '0xa2a8854b1802d8cd5de631e690817c253d6a9153',
+  input: '0x1234567890',
+  nonce: 762,
+  gasLimit: 52500,
+  gasPrice: BigNumber { _hex: '0x0ba43b7400', _isBigNumber: true },
+  chainId: 1001
+}
+```
+
+</CH.Code>
+
 ---
 Signing the transaction with the sender's private key
 
+<CH.Code>
 ```js TxTypeFeeDelegatedValueTransferMemo.js focus=26:27
 ```
+
+
+---
+
+```zsh output
+❯ node TxTypeFeeDelegatedValueTransferMemo.js
+senderTxHashRLP 0x11f88d8202fa850ba43b740082cd1494c40b6909eb7085590e1c26cb3becc25368e249e9872386f26fc1000094a2a8854b1802d8cd5de631e690817c253d6a9153851234567890f847f8458207f6a055c20733cb08839d352e8ccbfd9f977ea8ba6cdf1dfad117931a5ca2a6e0b58aa06a777f842b4f23f4ad24309408c78b315f788bcca60826bd68083827f070ee49
+```
+
+</CH.Code>
+
 ---
 
 Sending the transaction as the fee payer
@@ -215,7 +329,27 @@ Sending the transaction as the fee payer
 
 ```zsh output
 ❯ node TxTypeFeeDelegatedValueTransferMemo.js
-sentTx tx123
+sentTx {
+  hash: '0xfa2ae54df3314cdeb3c0fcf6ef970634a06e7d976d5a4e7146b03471e972f851',
+  type: 0,
+  accessList: null,
+  blockHash: null,
+  blockNumber: null,
+  transactionIndex: null,
+  confirmations: 0,
+  from: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
+  gasPrice: BigNumber { _hex: '0x0ba43b7400', _isBigNumber: true },
+  gasLimit: BigNumber { _hex: '0xcd14', _isBigNumber: true },
+  to: '0xC40B6909EB7085590E1c26Cb3beCC25368e249E9',
+  value: BigNumber { _hex: '0x2386f26fc10000', _isBigNumber: true },
+  nonce: 762,
+  data: '0x1234567890',
+  r: '0x55c20733cb08839d352e8ccbfd9f977ea8ba6cdf1dfad117931a5ca2a6e0b58a',
+  s: '0x6a777f842b4f23f4ad24309408c78b315f788bcca60826bd68083827f070ee49',
+  v: 2038,
+  creates: null,
+  chainId: 1001,
+}
 ```
 
 </CH.Code>
@@ -234,7 +368,24 @@ Wait for the transaction receipt.
 
 ```zsh output
 ❯ node TxTypeFeeDelegatedValueTransferMemo.js
-receipt tx123
+receipt {
+  to: '0xC40B6909EB7085590E1c26Cb3beCC25368e249E9',
+  from: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
+  contractAddress: null,
+  transactionIndex: 1,
+  gasUsed: BigNumber { _hex: '0x7b0c', _isBigNumber: true },
+  logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  blockHash: '0x599e1d0b915bd00eac2a80ddaa1bf7bd91c8b21c9223aaaed1f5f3cb2d5d446c',
+  transactionHash: '0xfa2ae54df3314cdeb3c0fcf6ef970634a06e7d976d5a4e7146b03471e972f851',
+  logs: [],
+  blockNumber: 143462707,
+  confirmations: 1,
+  cumulativeGasUsed: BigNumber { _hex: '0x034d11', _isBigNumber: true },
+  effectiveGasPrice: BigNumber { _hex: '0x05d21dba00', _isBigNumber: true },
+  status: 1,
+  type: 0,
+  byzantium: true
+}
 ```
 
 </CH.Code>
