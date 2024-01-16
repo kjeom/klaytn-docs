@@ -37,8 +37,24 @@ main();
 ---
 ```zsh output
 ❯ node txTypeLegacyTransaction.js
-3.523785565427238379
-0xa02e0i90faef4323cb542312de9aac0
+receipt {
+  to: '0xC40B6909EB7085590E1c26Cb3beCC25368e249E9',
+  from: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
+  contractAddress: null,
+  transactionIndex: 1,
+  gasUsed: BigNumber { _hex: '0x5208', _isBigNumber: true },
+  logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  blockHash: '0x9831848ad564cb4c165bc48b3fa76b38ea08314b1fbf28fa388bec888acd50ed',
+  transactionHash: '0x7b6c638d8dba310d348ad80d55fbbf6024b286b982fd68b08bdb85004cace46b',
+  logs: [],
+  blockNumber: 143449789,
+  confirmations: 3,
+  cumulativeGasUsed: BigNumber { _hex: '0x03240d', _isBigNumber: true },
+  effectiveGasPrice: BigNumber { _hex: '0x05d21dba00', _isBigNumber: true },
+  status: 1,
+  type: 0,
+  byzantium: true
+}
 ```
 </CH.Code>
 
@@ -66,7 +82,45 @@ Define sender address, sender private key and reciever address
 
 Setup the provider. A **Provider** in ethers is a read-only abstraction to access the blockchain data.
 
-```js txTypeValueTransferTransaction.js focus=8:10
+```js txTypeValueTransferTransaction.js focus=9:9
+
+```
+---
+
+Also, you can change the default provider. For example, using the alchemy provider.
+
+```js txTypeValueTransferTransaction.js focus=9:9
+const ethers = require("ethers");
+const { Wallet } = require("@klaytn/ethers-ext");
+
+const recieverAddr = '0xc40b6909eb7085590e1c26cb3becc25368e249e9' 
+const senderAddr = '0xa2a8854b1802d8cd5de631e690817c253d6a9153' 
+const senderPriv = '0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8' 
+
+async function main() {
+  const provider = new ethers.providers.JsonRpcProvider('https://klaytn-mainnet-rpc.allthatnode.com:8551')
+  const wallet = new Wallet(senderPriv, provider);
+
+  let tx = {
+      type: 8,
+      to: recieverAddr,
+      value: 1e11,
+      from: senderAddr,
+    }; 
+  
+  const sentTx = await wallet.sendTransaction(tx);
+  console.log('sentTx', sentTx);
+
+  const rc = await sentTx.wait();
+  console.log('receipt', rc);
+}
+
+main();
+```
+---
+Declare user wallet from private key
+
+```js txTypeValueTransferTransaction.js focus=10
 
 ```
 ---
@@ -79,8 +133,8 @@ Declare transaction params such as type, from, to, value. Such params can be fou
 
 Send a transaction to Klay.
 
-<CH.Code>
 
+<CH.Code>
 ```js txTypeValueTransferTransaction.js focus=19:21
 
 ```
@@ -89,7 +143,27 @@ Send a transaction to Klay.
 
 ```zsh output
 ❯ node txTypeValueTransferTransaction.js
-sentTx tx123
+sentTx {
+  hash: '0x7b6c638d8dba310d348ad80d55fbbf6024b286b982fd68b08bdb85004cace46b',
+  type: 0,
+  accessList: null,
+  blockHash: null,
+  blockNumber: null,
+  transactionIndex: null,
+  confirmations: 0,
+  from: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
+  gasPrice: BigNumber { _hex: '0x0ba43b7400', _isBigNumber: true },
+  gasLimit: BigNumber { _hex: '0xcd14', _isBigNumber: true },
+  to: '0xC40B6909EB7085590E1c26Cb3beCC25368e249E9',
+  value: BigNumber { _hex: '0x2386f26fc10000', _isBigNumber: true },
+  nonce: 759,
+  data: '0x',
+  r: '0xd49028d36e64df5ad7e00e5163740cb734133dde320fb7e5fde1c75df38b6bb8',
+  s: '0x4a7a7a7950dd6c2d905217cd6cb61948dbdeb5842c13b8376d9e3a231f266667',
+  v: 2037,
+  creates: null,
+  chainId: 1001,
+}
 ```
 
 </CH.Code>
@@ -106,7 +180,24 @@ Wait for the transaction receipt.
 
 ```zsh output
 ❯ node txTypeValueTransferTransaction.js
-receipt 123
+receipt {
+  to: '0xC40B6909EB7085590E1c26Cb3beCC25368e249E9',
+  from: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
+  contractAddress: null,
+  transactionIndex: 1,
+  gasUsed: BigNumber { _hex: '0x5208', _isBigNumber: true },
+  logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  blockHash: '0x9831848ad564cb4c165bc48b3fa76b38ea08314b1fbf28fa388bec888acd50ed',
+  transactionHash: '0x7b6c638d8dba310d348ad80d55fbbf6024b286b982fd68b08bdb85004cace46b',
+  logs: [],
+  blockNumber: 143449789,
+  confirmations: 3,
+  cumulativeGasUsed: BigNumber { _hex: '0x03240d', _isBigNumber: true },
+  effectiveGasPrice: BigNumber { _hex: '0x05d21dba00', _isBigNumber: true },
+  status: 1,
+  type: 0,
+  byzantium: true
+}
 ```
 
 </CH.Code>
@@ -193,7 +284,54 @@ Declaring constant variables for sender and fee payer addresses and private keys
 ---
 
 Creating a JSON-RPC provider instance with the specified URL
-```js TxTypeFeeDelegatedValueTransfer.js focus=11:13
+```js TxTypeFeeDelegatedValueTransfer.js focus=11:11
+
+```
+---
+
+Also, you can change the default provider. For example, using the alchemy provider.
+
+```js TxTypeFeeDelegatedValueTransfer.js focus=11:11
+const { Wallet, TxType, parseKlay } = require("@klaytn/ethers-ext");
+const ethers = require("ethers");
+
+const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
+const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+const feePayerAddr = "0xcb0eb737dfda52756495a5e08a9b37aab3b271da";
+const feePayerPriv = "0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4";
+const recieverAddr = "0xc40b6909eb7085590e1c26cb3becc25368e249e9";
+
+async function main() {
+  const provider = new ethers.providers.JsonRpcProvider("https://klaytn-mainnet-rpc.allthatnode.com:8551");
+  const senderWallet = new Wallet(senderPriv, provider);
+  const feePayerWallet = new Wallet(feePayerPriv, provider);
+
+  let tx = {
+    type: TxType.FeeDelegatedValueTransfer,
+    to: recieverAddr,
+    value: parseKlay("0.01"),
+    from: senderAddr,
+  };
+
+  tx = await senderWallet.populateTransaction(tx);
+  console.log(tx);
+
+  const senderTxHashRLP = await senderWallet.signTransaction(tx);
+  console.log("senderTxHashRLP", senderTxHashRLP);
+
+  const sentTx = await feePayerWallet.sendTransactionAsFeePayer(senderTxHashRLP);
+  console.log("sentTx", sentTx);
+
+  const rc = await sentTx.wait();
+  console.log("receipt", rc);
+}
+
+main();
+```
+---
+Declare sender and fee payer wallet from private key.
+
+```js TxTypeFeeDelegatedValueTransfer.js focus=12:13
 
 ```
 ---
@@ -205,21 +343,86 @@ Creating a transaction object
 ---
 
 Populating transaction with additional information
+  <CH.Code>
 ```js TxTypeFeeDelegatedValueTransfer.js focus=22:23
 
 ```
 ---
 
+```zsh output
+❯ node TxTypeFeeDelegatedValueTransfer.js
+{
+  type: 9,
+  to: '0xc40b6909eb7085590e1c26cb3becc25368e249e9',
+  value: BigNumber { _hex: '0x2386f26fc10000', _isBigNumber: true },
+  from: '0xa2a8854b1802d8cd5de631e690817c253d6a9153',
+  nonce: 760,
+  gasLimit: 52500,
+  gasPrice: BigNumber { _hex: '0x0ba43b7400', _isBigNumber: true },
+  chainId: 1001
+}
+
+
+
+receipt 123
+```
+
+</CH.Code>
+
+---
+
 Signing the transaction with the sender's private key
+<CH.Code>
 ```js TxTypeFeeDelegatedValueTransfer.js focus=25:26
 
 ```
+
+
+---
+
+```zsh output
+❯ node TxTypeFeeDelegatedValueTransfer.js
+senderTxHashRLP 0x09f8878202f8850ba43b740082cd1494c40b6909eb7085590e1c26cb3becc25368e249e9872386f26fc1000094a2a8854b1802d8cd5de631e690817c253d6a9153f847f8458207f6a06021c9de1bd99691fbb97161b63ed11cb15a5729fd9ba5cdee1611884700b1f6a0427b48381bbeb437a63fcfe0f7ba4d641f9ab8fa8dd3e25ade4c83944b3f2c2c
+```
+
+</CH.Code>
+
 ---
 
 Sending the transaction as the fee payer
+<CH.Code>
 ```js TxTypeFeeDelegatedValueTransfer.js focus=28:29
 
 ```
+
+
+---
+
+```zsh output
+❯ node TxTypeFeeDelegatedValueTransfer.js
+sentTx {
+  hash: '0xd582e192640512cefd402cde32d05ba54a34b8087b77c77ee3db1d1aa43548f7',
+  type: 0,
+  accessList: null,
+  blockHash: '0xfd8873a0fca6593be1e92a385c11671545066d0771dc50a6b96576758b321a4c',
+  blockNumber: 143450182,
+  transactionIndex: 0,
+  confirmations: 4,
+  from: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
+  gasPrice: BigNumber { _hex: '0x0ba43b7400', _isBigNumber: true },
+  gasLimit: BigNumber { _hex: '0xcd14', _isBigNumber: true },
+  to: '0xC40B6909EB7085590E1c26Cb3beCC25368e249E9',
+  value: BigNumber { _hex: '0x2386f26fc10000', _isBigNumber: true },
+  nonce: 760,
+  data: '0x',
+  r: '0x6021c9de1bd99691fbb97161b63ed11cb15a5729fd9ba5cdee1611884700b1f6',
+  s: '0x427b48381bbeb437a63fcfe0f7ba4d641f9ab8fa8dd3e25ade4c83944b3f2c2c',
+  v: 2038,
+  creates: null,
+  chainId: 1001,
+}
+```
+</CH.Code>
 ---
 Wait for the transaction receipt.
 
@@ -233,7 +436,24 @@ Wait for the transaction receipt.
 
 ```zsh output
 ❯ node TxTypeFeeDelegatedValueTransfer.js
-receipt 123
+receipt {
+  to: '0xC40B6909EB7085590E1c26Cb3beCC25368e249E9',
+  from: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
+  contractAddress: null,
+  transactionIndex: 0,
+  gasUsed: BigNumber { _hex: '0x7918', _isBigNumber: true },
+  logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  blockHash: '0xfd8873a0fca6593be1e92a385c11671545066d0771dc50a6b96576758b321a4c',
+  transactionHash: '0xd582e192640512cefd402cde32d05ba54a34b8087b77c77ee3db1d1aa43548f7',
+  logs: [],
+  blockNumber: 143450182,
+  confirmations: 4,
+  cumulativeGasUsed: BigNumber { _hex: '0x7918', _isBigNumber: true },
+  effectiveGasPrice: BigNumber { _hex: '0x05d21dba00', _isBigNumber: true },
+  status: 1,
+  type: 0,
+  byzantium: true
+}
 ```
 
 </CH.Code>

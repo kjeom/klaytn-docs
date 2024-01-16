@@ -93,21 +93,73 @@ Create a value transfer with memo transaction.
 ---
 
 Sign the Klaytn-specific transaction type with web3py.
+<CH.Code>
 ```py ValueTransferWithMemo.py focus=27:28
 
 ```
+
+
 ---
 
+```zsh output
+❯ py ValueTransferWithMemo.py
+raw transaction of signed tx: 0x10f89682030f850ba43b74008301042894a2a8854b1802d8cd5de631e690817c253d6a915388016345785d8a000094a2a8854b1802d8cd5de631e690817c253d6a91538c546573744d656d6f44617461f847f8458207f5a0ee13dfac1861821574f01db3619f01a7ca3cdd621a729c803386e8f25a1aaeafa048c3feaa6c6370076076dd3ac85a07da7e223fc519866f9e0586af253f3ad91c
+```
+
+</CH.Code>
+
+---
  Recover the sender's address from the signed transaction.
+
+<CH.Code>
 ```py ValueTransferWithMemo.py focus=30:31
 
 ```
+
+
+---
+
+```zsh output
+❯ py ValueTransferWithMemo.py
+recovered sender address 0xA2a8854b1802D8Cd5De631E690817c253d6a9153
+```
+
+</CH.Code>
+
 ---
 Decode the signed transaction and print the details.
+<CH.Code>
 
 ```py ValueTransferWithMemo.py focus=33:34
 
 ```
+
+---
+
+```zsh output
+❯ py ValueTransferWithMemo.py
+decoded transaction: {
+  "type": 16,
+  "to": "0xA2a8854b1802D8Cd5De631E690817c253d6a9153",
+  "value": 100000000000000000,
+  "nonce": 783,
+  "gasPrice": 50000000000,
+  "gas": 66600,
+  "from": "0xA2a8854b1802D8Cd5De631E690817c253d6a9153",
+  "data": "0x546573744d656d6f44617461",
+  "signatures": [
+    {
+      "v": 2037,
+      "r": 107685571786161958302940487519505289439206816373712852973775131861350568603311,
+      "s": 32912817913804616887322699312467460596322786056700123178119807056124413925660
+    }
+  ],
+  "chainId": 1001
+}
+```
+
+</CH.Code>
+
 ---
 Send the raw transaction to the Klaytn network.
 
@@ -117,11 +169,21 @@ Send the raw transaction to the Klaytn network.
 ---
 Wait for the transaction receipt and print the hash and receipt.
 
+<CH.Code>
 ```py ValueTransferWithMemo.py focus=37:39
 
 ```
 
 
+
+---
+
+```zsh output
+❯ py ValueTransferWithMemo.py
+tx hash:  0xe3d13f4f85ff9badb75b67ae9cd641c607bc6243ab49c5ab3f55ea09057ebe49 receipt:  {'blockHash': HexBytes('0x48e5a7854616b8a70420b9046d20ec410372eba77c9811e818d678d7a6b000d6'), 'blockNumber': 143821636, 'contractAddress': None, 'cumulativeGasUsed': 22200, 'effectiveGasPrice': 25000000000, 'from': '0xA2a8854b1802D8Cd5De631E690817c253d6a9153', 'gasUsed': 22200, 'logs': [], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'), 'status': 1, 'to': '0xA2a8854b1802D8Cd5De631E690817c253d6a9153', 'transactionHash': HexBytes('0xe3d13f4f85ff9badb75b67ae9cd641c607bc6243ab49c5ab3f55ea09057ebe49'), 'transactionIndex': 0, 'type': 0}
+```
+
+</CH.Code>
 
 
 </CH.Spotlight>
@@ -224,33 +286,114 @@ Create an empty fee-delegated value transfer with memo transaction.
 ---
 Sign the Klaytn-specific transaction type with web3py.
 
+<CH.Code>
 ```py FeeDelegatedValueTransferMemo.py focus=27:29
 
 ```
+
+
+---
+
+```zsh output
+❯ py FeeDelegatedValueTransferMemo.py
+raw transaction of signed tx: 0x11f88d820310850ba43b740082fac894a2a8854b1802d8cd5de631e690817c253d6a915388016345785d8a000094a2a8854b1802d8cd5de631e690817c253d6a9153846d656d6ff847f8458207f5a0b059d2c393945c2eb1f84cf26a9de80296f0c6bf69636136216f349385666008a057865f61bdd164732e3c1496f5297a25fa209b7001f7a909b1b75ccd9a674166
+```
+
+</CH.Code>
 ---
 Recover the sender's address from the signed transaction.
+<CH.Code>
 
 ```py FeeDelegatedValueTransferMemo.py focus=31:32
 
 ```
+
+
 ---
- Sign the transaction as the fee payer.
+
+```zsh output
+❯ py FeeDelegatedValueTransferMemo.py
+recovered sender address 0xA2a8854b1802D8Cd5De631E690817c253d6a9153
+```
+
+</CH.Code>
+---
+Sign the transaction as the fee payer.
+<CH.Code>
 
 ```py FeeDelegatedValueTransferMemo.py focus=34:35
 
 ```
+
+
+---
+
+```zsh output
+❯ py FeeDelegatedValueTransferMemo.py
+raw transaction of signed tx: 0x11f8eb820310850ba43b740082fac894a2a8854b1802d8cd5de631e690817c253d6a915388016345785d8a000094a2a8854b1802d8cd5de631e690817c253d6a9153846d656d6ff847f8458207f5a0b059d2c393945c2eb1f84cf26a9de80296f0c6bf69636136216f349385666008a057865f61bdd164732e3c1496f5297a25fa209b7001f7a909b1b75ccd9a67416694cb0eb737dfda52756495a5e08a9b37aab3b271daf847f8458207f6a09190406b5f98d7360987359321657e4f60b0a08f6bc738b5cb8cd3090e137874a039a1b50fa0ce862fc0d7a02b31d177d5e5285770f85217c3446dc92887966211
+```
+
+</CH.Code>
 ---
 Recover the fee payer's address from the signed transaction.
 
+<CH.Code>
 ```py FeeDelegatedValueTransferMemo.py focus=37:38
 
 ```
+
+
+---
+
+```zsh output
+❯ py FeeDelegatedValueTransferMemo.py
+recovered feepayer address: ['0xCb0eb737dfda52756495A5e08A9b37AAB3b271dA']
+```
+
+</CH.Code>
 ---
 Decode the signed transaction and print the details.
-
+<CH.Code>
 ```py FeeDelegatedValueTransferMemo.py focus=40:41
 
 ```
+
+
+
+
+---
+
+```zsh output
+❯ py FeeDelegatedValueTransferMemo.py
+decoded transaction: {
+  "type": 17,
+  "to": "0xA2a8854b1802D8Cd5De631E690817c253d6a9153",
+  "value": 100000000000000000,
+  "nonce": 784,
+  "gasPrice": 50000000000,
+  "gas": 64200,
+  "from": "0xA2a8854b1802D8Cd5De631E690817c253d6a9153",
+  "data": "0x6d656d6f",
+  "feePayer": "0xCb0eb737dfda52756495A5e08A9b37AAB3b271dA",
+  "signatures": [
+    {
+      "v": 2037,
+      "r": 79765765378884525347117439494767970585353848507962619395042292641319159750664,
+      "s": 39588633634432413261097368236126956160135867590506495223010744602888371650918
+    }
+  ],
+  "feePayerSignatures": [
+    {
+      "v": 2038,
+      "r": 65840233628449744351360629714820379842433770838641528262235209779182489008244,
+      "s": 26067544384098398894768894026591802452482694222720676372843625675853439328785
+    }
+  ],
+  "chainId": 1001
+}
+```
+
+</CH.Code>
 ---
 Send the raw transaction to the Klaytn network.
 
@@ -260,9 +403,18 @@ Send the raw transaction to the Klaytn network.
 ---
 
 Wait for the transaction receipt and print the hash and receipt.
+<CH.Code>
 ```py FeeDelegatedValueTransferMemo.py focus=44:45
 
 ```
 
 
+---
+
+```zsh output
+❯ py FeeDelegatedValueTransferMemo.py
+tx hash:  0x9b0b3d455bc46986d059bd1b665732555d9a1e79ddd8caaeadf3a2dd50fa983c receipt:  {'blockHash': HexBytes('0x1335ff39b1a56a5e9338305a92b49e15aa487b39bc80e500906e1c5cf5d5f66a'), 'blockNumber': 143821917, 'contractAddress': None, 'cumulativeGasUsed': 213437, 'effectiveGasPrice': 25000000000, 'from': '0xA2a8854b1802D8Cd5De631E690817c253d6a9153', 'gasUsed': 31400, 'logs': [], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'), 'status': 1, 'to': '0xA2a8854b1802D8Cd5De631E690817c253d6a9153', 'transactionHash': HexBytes('0x9b0b3d455bc46986d059bd1b665732555d9a1e79ddd8caaeadf3a2dd50fa983c'), 'transactionIndex': 1, 'type': 0}
+```
+
+</CH.Code>
 </CH.Spotlight>
