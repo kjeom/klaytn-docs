@@ -1,0 +1,216 @@
+# Value Transfer
+TxTypeValueTransfer is used when a user wants to send KLAY.
+
+- As Klaytn provides multiple transaction types to make each transaction type serve a single purpose, TxTypeValueTransfer is limited to send KLAY to an externally owned account (EOA).
+
+<CH.Spotlight>
+<CH.Code>
+
+```py txTypeFeeDelegatedValueTransferTransaction.py
+from web3py_ext import extend
+from web3 import Web3
+from eth_account import Account
+from web3py_ext.transaction.transaction import (
+    empty_tx,
+    fill_transaction,
+    TX_TYPE_FEE_DELEGATED_VALUE_TRANSFER
+)
+from web3py_ext.utils.klaytn_utils import to_pretty
+from cytoolz import merge
+
+w3 = Web3(Web3.HTTPProvider('https://public-en-baobab.klaytn.net'))
+
+def web3_fee_delegated_value_transfer_sign_recover():
+    user = Account.from_key('0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8')
+    fee_delegator = Account.from_key('0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4')
+
+    fee_delegated_value_transfer_tx = empty_tx(TX_TYPE_FEE_DELEGATED_VALUE_TRANSFER)
+    fee_delegated_value_transfer_tx = merge(fee_delegated_value_transfer_tx, {
+        'from' : user.address,
+        'to' : user.address, # to self
+        'value' : Web3.to_peb(0.1, 'klay'),
+    })
+    fee_delegated_value_transfer_tx = fill_transaction(fee_delegated_value_transfer_tx, w3)
+
+    # sign the klaytn specific transaction type with web3py
+    signed_tx = Account.sign_transaction(fee_delegated_value_transfer_tx, user.key)
+    print("\nraw transaction of signed tx:", signed_tx.rawTransaction.hex())
+    recovered_tx = Account.recover_transaction(signed_tx.rawTransaction)
+    print("\nrecovered sender address", recovered_tx)
+
+    feepayer_signed_tx = Account.sign_transaction_as_feepayer(signed_tx.rawTransaction, fee_delegator.address, fee_delegator.key)
+    print("\nraw transaction of signed tx:", feepayer_signed_tx.rawTransaction.hex())
+
+    feepayer_recovered_tx = Account.recover_transaction_as_feepayer(feepayer_signed_tx.rawTransaction)
+    print("recovered feepayer address:", feepayer_recovered_tx)
+
+    decoded_tx = Account.decode_transaction(feepayer_signed_tx.rawTransaction)
+    print("\ndecoded transaction:", to_pretty(decoded_tx))
+
+    tx_hash = w3.eth.send_raw_transaction(feepayer_signed_tx.rawTransaction)
+    tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+    print('tx hash: ', tx_hash, 'receipt: ', tx_receipt)
+
+web3_fee_delegated_value_transfer_sign_recover()
+
+```
+
+
+
+
+---
+```zsh output
+❯ node functionName.js
+output
+```
+</CH.Code>
+
+
+
+
+
+
+---
+
+Import required packages.
+
+```py txTypeFeeDelegatedValueTransferTransaction.py focus=1:10
+
+```
+---
+Create a Web3 instance connected to the BAOBAB testnet.
+
+```py txTypeFeeDelegatedValueTransferTransaction.py focus=12
+
+```
+---
+Create Account objects for the user and fee delegator using private keys.
+
+```py txTypeFeeDelegatedValueTransferTransaction.py focus=15:16
+
+```
+---
+Create a fee-delegated value transfer transaction.
+
+```py txTypeFeeDelegatedValueTransferTransaction.py focus=18:24
+
+```
+---
+Sign the Klaytn-specific transaction type with web3py.
+
+<CH.Code>
+```py txTypeFeeDelegatedValueTransferTransaction.py focus=26:28
+
+```
+
+
+---
+
+```zsh output
+❯ py txTypeFeeDelegatedValueTransferTransaction.py
+raw transaction of signed tx: 0x09f88882030e850ba43b740082f61894a2a8854b1802d8cd5de631e690817c253d6a915388016345785d8a000094a2a8854b1802d8cd5de631e690817c253d6a9153f847f8458207f5a0701261726a21b97f33d245940102ec1db848fa6f1015ce6dbf82f36fcdf70eb9a0514a9bd7a5f5f572fca20cf1bf884025e25508a59442d1f7cc433b0dae564dac
+```
+
+</CH.Code>
+---
+Recover the sender's address from the signed transaction.
+<CH.Code>
+
+```py txTypeFeeDelegatedValueTransferTransaction.py focus=29:30
+
+```
+
+
+---
+
+```zsh output
+❯ py txTypeFeeDelegatedValueTransferTransaction.py
+recovered sender address 0xA2a8854b1802D8Cd5De631E690817c253d6a9153
+```
+
+</CH.Code>
+---
+Sign the transaction as the fee payer.
+
+```py txTypeFeeDelegatedValueTransferTransaction.py focus=32:33
+
+```
+---
+Recover the fee payer's address from the signed transaction.
+
+<CH.Code>
+```py txTypeFeeDelegatedValueTransferTransaction.py focus=35:36
+
+```
+
+
+---
+
+```zsh output
+❯ py txTypeFeeDelegatedValueTransferTransaction.py
+recovered feepayer address: ['0xCb0eb737dfda52756495A5e08A9b37AAB3b271dA']
+```
+
+</CH.Code>
+---
+Decode the signed transaction.
+<CH.Code>
+```py txTypeFeeDelegatedValueTransferTransaction.py focus=38:39
+
+```
+
+---
+
+```zsh output
+❯ py txTypeFeeDelegatedValueTransferTransaction.py
+decoded transaction: {
+  "type": 9,
+  "to": "0xA2a8854b1802D8Cd5De631E690817c253d6a9153",
+  "value": 100000000000000000,
+  "nonce": 782,
+  "gasPrice": 50000000000,
+  "gas": 63000,
+  "from": "0xA2a8854b1802D8Cd5De631E690817c253d6a9153",
+  "feePayer": "0xCb0eb737dfda52756495A5e08A9b37AAB3b271dA",
+  "signatures": [
+    {
+      "v": 2037,
+      "r": 50691514842498381567070849504402583109757791219306486547462038310718807674553,
+      "s": 36769163002588173574455873574135523456290590785610097285006856943874380025260
+    }
+  ],
+  "feePayerSignatures": [
+    {
+      "v": 2038,
+      "r": 60728158557991503180505493368021413772751916772408250238953062516885177405564,
+      "s": 49023092189116230171474387517244060616520232186821314097928587751775084593334
+    }
+  ],
+  "chainId": 1001
+}
+
+```
+
+</CH.Code>
+---
+Send the raw transaction to the Klaytn network.
+```py txTypeFeeDelegatedValueTransferTransaction.py focus=41
+
+```
+---
+Wait for the transaction receipt and print the hash and receipt.
+<CH.Code>
+```py txTypeFeeDelegatedValueTransferTransaction.py focus=42:43
+
+```
+
+
+---
+
+```zsh output
+❯ py txTypeFeeDelegatedValueTransferTransaction.py
+tx hash:  0xad3e6e50ae5caceb6840e001a1aa65bb62e80532102aa7317500505e82283db7 receipt:  {'blockHash': HexBytes('0x71592bc1fa8a3a5b7d13e1f4f291eaf331dd70379e2f2e38914544d7112ad668'), 'blockNumber': 143821087, 'contractAddress': None, 'cumulativeGasUsed': 31000, 'effectiveGasPrice': 25000000000, 'from': '0xA2a8854b1802D8Cd5De631E690817c253d6a9153', 'gasUsed': 31000, 'logs': [], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'), 'status': 1, 'to': '0xA2a8854b1802D8Cd5De631E690817c253d6a9153', 'transactionHash': HexBytes('0xad3e6e50ae5caceb6840e001a1aa65bb62e80532102aa7317500505e82283db7'), 'transactionIndex': 0, 'type': 0}
+```
+
+</CH.Code>
+</CH.Spotlight>

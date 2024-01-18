@@ -1,0 +1,216 @@
+# Value Transfer
+TxTypeValueTransfer is used when a user wants to send KLAY.
+
+- As Klaytn provides multiple transaction types to make each transaction type serve a single purpose, TxTypeValueTransfer is limited to send KLAY to an externally owned account (EOA).
+<CH.Spotlight>
+<CH.Code>
+
+```java txTypeValueTransferTransaction.java
+package org.web3j.example;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import org.web3j.crypto.KlayCredentials;
+import org.web3j.crypto.KlayRawTransaction;
+import org.web3j.crypto.KlayTransactionEncoder;
+import org.web3j.crypto.transaction.type.TxType;
+import org.web3j.crypto.transaction.type.TxTypeValueTransfer;
+import org.web3j.crypto.transaction.type.TxType.Type;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthChainId;
+import org.web3j.protocol.core.methods.response.EthSendTransaction;
+import org.web3j.protocol.http.HttpService;
+import org.web3j.protocol.klaytn.Web3j;
+import org.web3j.utils.Numeric;
+import org.web3j.protocol.klaytn.core.method.response.TransactionReceipt;
+
+/**
+ * 
+ */
+public class ValueTransferExample implements keySample {
+    /**
+     * 
+     */
+
+    public static void run() throws IOException {
+        Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
+        KlayCredentials credentials = KlayCredentials.create(keySample.LEGACY_KEY_privkey);
+
+        BigInteger GAS_PRICE = BigInteger.valueOf(50000000000L);
+        BigInteger GAS_LIMIT = BigInteger.valueOf(6721950);
+        String from = credentials.getAddress();
+        EthChainId EthchainId = web3j.ethChainId().send();
+        long chainId = EthchainId.getChainId().longValue();
+        String to = "0x000000000000000000000000000000000000dead";
+        BigInteger nonce = web3j.ethGetTransactionCount(from, DefaultBlockParameterName.LATEST).send()
+                .getTransactionCount();
+        BigInteger value = BigInteger.valueOf(100);
+
+        TxType.Type type = Type.VALUE_TRANSFER;
+
+        KlayRawTransaction raw = KlayRawTransaction.createTransaction(
+                type,
+                nonce,
+                GAS_PRICE,
+                GAS_LIMIT,
+                to,
+                value,
+                from);
+
+        byte[] signedMessage = KlayTransactionEncoder.signMessage(raw, chainId, credentials);
+        String hexValue = Numeric.toHexString(signedMessage);
+        EthSendTransaction transactionResponse = web3j.ethSendRawTransaction(hexValue).send();
+        System.out.println("TxHash : \n " + transactionResponse.getResult());
+        String txHash = transactionResponse.getResult();
+        try {
+            Thread.sleep(2000);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        TransactionReceipt receipt = web3j.klayGetTransactionReceipt(txHash).send().getResult();
+        System.out.println("receipt : \n" + receipt);
+        web3j.shutdown();
+
+        TxTypeValueTransfer rawTransaction = TxTypeValueTransfer.decodeFromRawTransaction(signedMessage);
+        System.out.println("TxType : " + rawTransaction.getKlayType());
+    }
+
+}
+```
+---
+```zsh output
+❯ node txTypeLegacyTransaction.java
+3.523785565427238379
+0xa02e0i90faef4323cb542312de9aac0
+```
+</CH.Code>
+
+---
+
+Import the `ethers` package that can interact with the Ethereum Blockchain and its ecosystem.
+
+```java txTypeValueTransferTransaction.java focus=1:17
+
+```
+
+
+
+---
+Define web3 instance.
+```java txTypeValueTransferTransaction.java focus=28:28
+
+```
+---
+Define your account.
+```java txTypeValueTransferTransaction.java focus=29:29
+
+```
+
+---
+Declare transaction params such as type, from, to, value. Such params can be found here 
+
+```java txTypeValueTransferTransaction.java focus=31:41
+
+```
+---
+
+Sign the transaction with your account.
+
+
+
+```java txTypeValueTransferTransaction.java focus=52
+
+```
+---
+
+Send the signed transaction.
+
+
+<CH.Code>
+
+```java txTypeValueTransferTransaction.java focus=53:55
+
+```
+
+
+---
+
+```zsh output
+❯ node TxTypeFeeDelegatedValueTransfer.js
+0x78a87f014fd4f7a2fb606c3b133c1d3e8bf9b100e3b28f10b71ac440ec3f4da4
+```
+
+</CH.Code>
+
+---
+Get transaction receipt.
+
+<CH.Code>
+
+```java txTypeValueTransferTransaction.java focus=56:63
+
+```
+
+
+---
+
+```zsh output
+❯ java txTypeValueTransferTransaction.java
+class TransactionReceipt {
+    blockHash: 0x3532a49b7ee37f4ddec71210d8d5e79075092c33f7ed44cc3d1d9ba50cc50b94
+    blockNumber: 0x891424d
+    codeFormat: null
+    contractAddress: null
+    feePayer: null
+    feePayerSignatures: []
+    feeRatio: null
+    from: 0xa2a8854b1802d8cd5de631e690817c253d6a9153
+    gas: 0x66919e
+    effectiveGasPrice: 0x5d21dba00
+    gasPrice: 0xba43b7400
+    gasUsed: 0x5208
+    humanReadable: null
+    key: null
+    input: null
+    logs: []
+    logsBloom: 0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+    nonce: 0x309
+    senderTxHash: 0x78a87f014fd4f7a2fb606c3b133c1d3e8bf9b100e3b28f10b71ac440ec3f4da4
+    signature: []
+    status: 0x1
+    txError: null
+    to: 0x000000000000000000000000000000000000dead
+    transactionHash: 0x78a87f014fd4f7a2fb606c3b133c1d3e8bf9b100e3b28f10b71ac440ec3f4da4
+    transactionIndex: 0x2
+    type: TxTypeValueTransfer
+    typeInt: 8
+    value: 0x64
+}
+```
+
+</CH.Code>
+
+
+---
+Shutdown
+```java txTypeValueTransferTransaction.java focus=64
+
+```
+---
+Get sent transaction type.
+<CH.Code>
+```java txTypeValueTransferTransaction.java focus=66:67
+
+```
+
+
+---
+
+```zsh output
+❯ node TxTypeFeeDelegatedValueTransfer.js
+TxType : VALUE_TRANSFER
+```
+
+</CH.Code>
+
+</CH.Spotlight>

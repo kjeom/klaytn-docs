@@ -1,0 +1,180 @@
+# Account Update
+
+
+
+<CH.Spotlight>
+<CH.Code>
+
+```js TxTypeAccountUpdate.js
+const { KlaytnWeb3, TxType, AccountKeyType, getPublicKeyFromPrivate } = require("@klaytn/web3js-ext");
+const { Web3 } = require("web3");
+
+// Using senderPriv == senderNewPriv to execute this example repeatedly.
+// But you might want to register a different private key.
+const senderAddr = "0xe15cd70a41dfb05e7214004d7d054801b2a2f06b";
+const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+const senderNewPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+
+async function main() {
+  const provider = new Web3.providers.HttpProvider("https://public-en-baobab.klaytn.net");
+  const web3 = new KlaytnWeb3(provider);
+  const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
+
+  const publicKey = getPublicKeyFromPrivate(senderNewPriv);
+  console.log({ publicKey });
+
+  const tx = {
+    type: TxType.AccountUpdate,
+    from: senderAddr,
+    key: {
+      type: AccountKeyType.Public,
+      key: publicKey,
+    }
+  };
+
+  const signResult = await senderAccount.signTransaction(tx);
+  console.log("rawTx", signResult.rawTransaction);
+
+  const receipt = await web3.eth.sendSignedTransaction(signResult.rawTransaction);
+  console.log("receipt", receipt);
+}
+
+main();
+```
+
+
+
+
+---
+```zsh output
+❯ js TxTypeAccountUpdate.js
+output
+```
+</CH.Code>
+
+
+
+
+
+
+---
+Importing necessary modules from the Klaytn Web3.
+
+
+```js TxTypeAccountUpdate.js focus=1
+
+```
+
+---
+
+Importing the Web3 module from the standard Ethereum Web3 library
+
+```js TxTypeAccountUpdate.js focus=2
+
+```
+
+---
+
+Declaring constant variables for sender addresses and private keys
+
+
+```js TxTypeAccountUpdate.js focus=6:8
+
+```
+
+---
+
+Creating a provider instance with the specified URL
+
+
+```js TxTypeAccountUpdate.js focus=11:12
+
+```
+---
+
+Also, you can change the default provider. For example, using the alchemy provider.
+
+```js TxTypeAccountUpdate.js focus=11
+const { KlaytnWeb3, TxType, AccountKeyType, getPublicKeyFromPrivate } = require("@klaytn/web3js-ext");
+const { Web3 } = require("web3");
+
+// Using senderPriv == senderNewPriv to execute this example repeatedly.
+// But you might want to register a different private key.
+const senderAddr = "0xe15cd70a41dfb05e7214004d7d054801b2a2f06b";
+const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+const senderNewPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+
+async function main() {
+  const provider = new Web3.providers.HttpProvider("https://klaytn-mainnet-rpc.allthatnode.com:8551");
+  const web3 = new KlaytnWeb3(provider);
+  const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
+
+  const publicKey = getPublicKeyFromPrivate(senderNewPriv);
+  console.log({ publicKey });
+
+  const tx = {
+    type: TxType.AccountUpdate,
+    from: senderAddr,
+    key: {
+      type: AccountKeyType.Public,
+      key: publicKey,
+    }
+  };
+
+  const signResult = await senderAccount.signTransaction(tx);
+  console.log("rawTx", signResult.rawTransaction);
+
+  const receipt = await web3.eth.sendSignedTransaction(signResult.rawTransaction);
+  console.log("receipt", receipt);
+}
+
+main();
+
+```
+---
+
+Declare sender wallet using private key.
+
+
+```js TxTypeAccountUpdate.js focus=13
+
+```
+---
+
+Generating the public key from the new private key
+
+
+```js TxTypeAccountUpdate.js focus=15:16
+
+```
+
+---
+Creating a transaction object for account update
+
+
+
+```js TxTypeAccountUpdate.js focus=18:25
+
+```
+
+---
+
+Signing the transaction with the sender's private key
+
+
+```js TxTypeAccountUpdate.js focus=27:28
+
+```
+
+---
+Sending the signed transaction
+
+
+
+```js TxTypeAccountUpdate.js focus=30:31
+
+```
+
+
+
+</CH.Spotlight>
