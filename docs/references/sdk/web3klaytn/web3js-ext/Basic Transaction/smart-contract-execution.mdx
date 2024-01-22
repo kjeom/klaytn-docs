@@ -1,0 +1,127 @@
+# Smart Contract Execution
+**TxTypeSmartContractExecution** executes a smart contract with the given data. **TxTypeSmartContractExecution** is accepted only if "to" is a smart contract account.
+
+<CH.Spotlight>
+<CH.Code>
+
+```js SmartContractExecution.js
+const { KlaytnWeb3, TxType } = require("@klaytn/web3js-ext");
+const { Web3 } = require("web3");
+
+const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
+const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+const contractAddr = "0xD7fA6634bDDe0B2A9d491388e2fdeD0fa25D2067";
+const contractAbi = [
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "newNumber",
+        "type": "uint256"
+      }
+    ],
+    "name": "setNumber",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+];
+
+async function main() {
+  const provider = new Web3.providers.HttpProvider("https://public-en-baobab.klaytn.net");
+  const web3 = new KlaytnWeb3(provider);
+  const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
+
+  // https://web3js.readthedocs.io/en/v1.2.11/web3-eth-contract.html#methods-mymethod-encodeabi
+  const contract = new web3.eth.Contract(contractAbi, contractAddr);
+  const data = contract.methods.setNumber(0x123).encodeABI();
+
+  const tx = {
+    type: TxType.SmartContractExecution,
+    from: senderAddr,
+    to: contractAddr,
+    data: data,
+  };
+
+  const signResult = await senderAccount.signTransaction(tx);
+  console.log("rawTx", signResult.rawTransaction);
+
+  const receipt = await web3.eth.sendSignedTransaction(signResult.rawTransaction);
+  console.log("receipt", receipt);
+}
+
+main();
+```
+
+
+
+
+---
+```zsh output
+❯ node SmartContractExecution.js
+output
+```
+</CH.Code>
+
+---
+Import necessary utils from web3 and web3js-ext
+
+```js SmartContractExecution.js focus=1:2
+
+```
+---
+Define sender address and private key
+```js SmartContractExecution.js focus=4:5
+
+```
+---
+Define contract address and abi
+```js SmartContractExecution.js focus=6:21
+
+```
+---
+Connect to the Baobab testnet
+
+```js SmartContractExecution.js focus=24:25
+
+```
+---
+Create a KlaytnWeb3 account using the private key
+
+```js SmartContractExecution.js focus=26
+
+```
+---
+Create a contract instance
+
+```js SmartContractExecution.js focus=29
+
+```
+---
+Encode the function data for the "setNumber" function
+
+```js SmartContractExecution.js focus=30
+
+```
+---
+Build the transaction object
+
+```js SmartContractExecution.js focus=32:37
+
+```
+---
+Sign the transaction with the sender's private key
+
+```js SmartContractExecution.js focus=39:40
+
+```
+---
+Send the signed transaction
+
+```js SmartContractExecution.js focus=42:43
+
+```
+
+
+
+</CH.Spotlight>

@@ -1,0 +1,150 @@
+# Smart Contract Execution
+**TxTypeSmartContractExecution** executes a smart contract with the given data. **TxTypeSmartContractExecution** is accepted only if "to" is a smart contract account.
+
+<CH.Spotlight>
+<CH.Code>
+
+```js FeeDelegatedSmartContractExecutionWithRatio.js
+const { Wallet, TxType } = require("@klaytn/ethers-ext");
+const ethers = require("ethers");
+
+const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
+const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+const feePayerAddr = "0xcb0eb737dfda52756495a5e08a9b37aab3b271da";
+const feePayerPriv = "0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4";
+
+async function main() {
+  const provider = new ethers.providers.JsonRpcProvider("https://public-en-baobab.klaytn.net");
+  const senderWallet = new Wallet(senderPriv, provider);
+  const feePayerWallet = new Wallet(feePayerPriv, provider);
+
+  const CONTRACT_ADDRESS = "0xcc18eC0261AADbe5fB5a7854449FC26b4F428653";
+  const CONTRACT_ABI = ["function setNumber(uint256 newNumber) public", "function increment() public"];
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
+  const param = contract.interface.encodeFunctionData("setNumber", ["0x123"]);
+
+  let tx = {
+    type: TxType.FeeDelegatedSmartContractExecutionWithRatio,
+    from: senderAddr,
+    to: CONTRACT_ADDRESS,
+    value: 0,
+    input: param,
+    gasLimit: 100000,
+    feeRatio: 30,
+  };
+
+  tx = await senderWallet.populateTransaction(tx);
+  console.log(tx);
+
+  const senderTxHashRLP = await senderWallet.signTransaction(tx);
+  console.log("senderTxHashRLP", senderTxHashRLP);
+
+  const sentTx = await feePayerWallet.sendTransactionAsFeePayer(senderTxHashRLP);
+  console.log("sentTx", sentTx);
+
+  const rc = await sentTx.wait();
+  console.log("receipt", rc);
+}
+
+main();
+
+
+```
+
+
+
+
+---
+```zsh output
+❯ node FeeDelegatedSmartContractExecutionWithRatio.js
+output
+```
+</CH.Code>
+
+
+---
+Import necessary utils from ethers and klaytn/ethers-ext
+
+```js FeeDelegatedSmartContractExecutionWithRatio.js focus=1:2
+
+```
+---
+Define sender and fee payer addresses and private keys
+
+```js FeeDelegatedSmartContractExecutionWithRatio.js focus=4:7
+
+```
+---
+
+Connect to the Baobab testnet
+
+```js FeeDelegatedSmartContractExecutionWithRatio.js focus=10
+
+```
+---
+
+Create sender and fee payer wallets
+
+```js FeeDelegatedSmartContractExecutionWithRatio.js focus=11:12
+
+```
+---
+
+Define the contract address and ABI
+
+```js FeeDelegatedSmartContractExecutionWithRatio.js focus=14:15
+
+```
+---
+Create a contract instance
+
+
+```js FeeDelegatedSmartContractExecutionWithRatio.js focus=16
+
+```
+---
+
+Encode the function data for the "setNumber" function
+
+```js FeeDelegatedSmartContractExecutionWithRatio.js focus=17
+
+```
+---
+Build the transaction object with fee ratio
+
+
+```js FeeDelegatedSmartContractExecutionWithRatio.js focus=19:27
+
+```
+---
+
+Populate the transaction with necessary details
+
+```js FeeDelegatedSmartContractExecutionWithRatio.js focus=29:30
+```
+
+
+---
+
+Sign the transaction by the sender
+
+```js FeeDelegatedSmartContractExecutionWithRatio.js focus=32:33
+
+```
+---
+
+Send the transaction with fee delegation
+
+```js FeeDelegatedSmartContractExecutionWithRatio.js focus=35:36
+
+```
+---
+Wait for the transaction receipt
+
+
+```js FeeDelegatedSmartContractExecutionWithRatio.js focus=38:39
+
+```
+
+
+</CH.Spotlight>
