@@ -1,0 +1,115 @@
+# Smart Contract Execution
+**TxTypeSmartContractExecution** executes a smart contract with the given data. **TxTypeSmartContractExecution** is accepted only if "to" is a smart contract account.
+
+<CH.Spotlight>
+<CH.Code>
+
+```js smartContractExecution.js
+const { Wallet, TxType } = require("@klaytn/ethers-ext");
+const ethers = require("ethers");
+
+const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
+const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+const contractAddr = "0xD7fA6634bDDe0B2A9d491388e2fdeD0fa25D2067";
+
+async function main() {
+  const provider = new ethers.providers.JsonRpcProvider("https://public-en-baobab.klaytn.net");
+  const wallet = new Wallet(senderPriv, provider);
+
+  const CONTRACT_ADDRESS = contractAddr;
+  const CONTRACT_ABI = ["function setNumber(uint256 newNumber) public", "function increment() public"];
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
+  const param = contract.interface.encodeFunctionData("setNumber", ["0x123"]);
+
+  let tx = {
+    type: TxType.SmartContractExecution,
+    from: senderAddr,
+    to: contractAddr,
+    value: 0,
+    input: param,
+    gasLimit: 100000,
+  };
+
+  const sentTx = await wallet.sendTransaction(tx);
+  console.log("sentTx", sentTx);
+
+  const rc = await sentTx.wait();
+  console.log("receipt", rc);
+}
+
+main();
+```
+---
+```zsh output
+❯ node smartContractExecution.js
+output
+```
+</CH.Code>
+---
+Import necessary utils from ethers and ether-ext
+
+```js smartContractExecution.js focus=1:2
+
+```
+---
+Define sender address and private key
+```js smartContractExecution.js focus=4:5
+
+```
+---
+Define contract address
+```js smartContractExecution.js focus=6
+
+```
+---
+Connect to the Baobab testnet
+
+```js smartContractExecution.js focus=9
+
+```
+---
+Create a wallet with the sender's private key
+
+```js smartContractExecution.js focus=10
+
+```
+---
+Define the contract address and ABI
+
+```js smartContractExecution.js focus=12:13
+
+```
+---
+Create a contract instance
+
+```js smartContractExecution.js focus=14
+
+```
+---
+Encode the function data for the "setNumber" function
+
+```js smartContractExecution.js focus=15
+
+```
+---
+Build the transaction object
+
+```js smartContractExecution.js focus=17:24
+
+```
+---
+Send the transaction using the wallet
+
+```js smartContractExecution.js focus=26:27
+
+```
+---
+Wait for the transaction receipt
+
+```js smartContractExecution.js focus=29:30
+
+```
+
+
+
+</CH.Spotlight>
