@@ -1,0 +1,94 @@
+# Cancel
+**TxTypeCancel** cancels the execution of the transaction with the same nonce in the transaction pool. This transaction type is useful when a submitted transaction seems unprocessed for a certain amount of time.
+
+
+<CH.Spotlight>
+<CH.Code>
+
+```js TxCancelType.js
+const { KlaytnWeb3, TxType } = require("@klaytn/web3js-ext");
+const { Web3 } = require("web3");
+
+const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
+const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+
+async function main() {
+  const provider = new Web3.providers.HttpProvider("https://public-en-baobab.klaytn.net");
+  const web3 = new KlaytnWeb3(provider);
+  const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
+
+  const tx = {
+    type: TxType.Cancel,
+    from: senderAddr,
+  };
+
+  const signResult = await senderAccount.signTransaction(tx);
+  console.log("rawTx", signResult.rawTransaction);
+
+  const receipt = await web3.eth.sendSignedTransaction(signResult.rawTransaction);
+  console.log("receipt", receipt);
+}
+
+main();
+```
+
+
+
+
+---
+```zsh output
+❯ js TxCancelType.js
+output
+```
+</CH.Code>
+
+---
+Import necessary libraries and modules
+
+```js TxCancelType.js focus=1:2
+
+```
+---
+Define sender address and private key
+
+```js TxCancelType.js focus=4:5
+
+```
+---
+Create a provider using the Klaytn Baobab testnet HTTP URL
+
+```js TxCancelType.js focus=8
+
+```
+---
+Create a KlaytnWeb3 instance using the provider
+
+```js TxCancelType.js focus=9
+
+```
+---
+Convert the sender's private key to an account
+
+```js TxCancelType.js focus=10
+
+```
+---
+Define a transaction object for the Cancel transaction
+
+```js TxCancelType.js focus=12:15
+
+```
+---
+Sign the transaction with the sender's account
+
+```js TxCancelType.js focus=17:18
+
+```
+---
+Send the signed transaction and log the receipt
+
+```js TxCancelType.js focus=20:21
+
+```
+
+</CH.Spotlight>
