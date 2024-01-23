@@ -1,0 +1,132 @@
+# Cancel
+**TxTypeCancel** cancels the execution of the transaction with the same nonce in the transaction pool. This transaction type is useful when a submitted transaction seems unprocessed for a certain amount of time.
+
+
+<CH.Spotlight>
+<CH.Code>
+
+```js TxCancelType.js
+const { Wallet, TxType, parseKlay } = require("@klaytn/ethers-ext");
+const ethers = require("ethers");
+
+const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
+const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+const recieverAddr = "0xc40b6909eb7085590e1c26cb3becc25368e249e9";
+
+async function main() {
+  const provider = new ethers.providers.JsonRpcProvider("https://public-en-baobab.klaytn.net");
+  const wallet = new Wallet(senderPriv, provider);
+
+  let nextNonce = await wallet.getTransactionCount();
+  let tx = {
+    type: TxType.ValueTransfer,
+    nonce: nextNonce + 1,
+    to: recieverAddr,
+    value: parseKlay("0.01"),
+    from: senderAddr,
+  };
+
+  const nextTx = await wallet.sendTransaction(tx);
+  console.log("tx next + 1", nextTx);
+
+
+  let txCancel = {
+    type: TxType.Cancel,
+    nonce: nextNonce + 1,
+    from: senderAddr,
+  };
+
+  const cancelTx = await wallet.sendTransaction(txCancel);
+  console.log("tx next + 1 Cancel", cancelTx);
+
+  tx.nonce = nextNonce;
+
+  const sentTx = await wallet.sendTransaction(tx);
+  console.log("tx next", sentTx);
+
+  const rc = await sentTx.wait();
+  console.log("receipt", rc);
+}
+
+main();
+```
+
+
+
+
+---
+```zsh output
+❯ js TxCancelType.js
+output
+```
+</CH.Code>
+
+---
+Import necessary libraries and modules
+
+```js TxCancelType.js focus=1:2
+
+```
+---
+Define sender, receiver addresses, and sender's private key
+
+```js TxCancelType.js focus=4:6
+
+```
+---
+Create a provider using the Klaytn Baobab testnet JSON-RPC URL
+
+```js TxCancelType.js focus=9
+
+```
+---
+Create a wallet using the sender's private key and the provider
+
+```js TxCancelType.js focus=10
+
+```
+---
+Send a ValueTransfer transaction with the next nonce+1
+
+```js TxCancelType.js focus=12:19
+
+```
+---
+Send the ValueTransfer transaction and log the result
+
+```js TxCancelType.js focus=21:22
+
+```
+---
+Send a Cancel transaction with the next nonce+1
+
+```js TxCancelType.js focus=25
+
+```
+---
+Send the Cancel transaction and log the result
+
+```js TxCancelType.js focus=31:32
+
+```
+---
+Send another ValueTransfer transaction with the next nonce
+
+```js TxCancelType.js focus=34
+
+```
+---
+Send the ValueTransfer transaction and log the result
+
+```js TxCancelType.js focus=36:37
+
+```
+---
+Wait for the transaction receipt and log it
+
+```js TxCancelType.js focus=39:40
+
+```
+
+
+</CH.Spotlight>
