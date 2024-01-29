@@ -1,0 +1,182 @@
+# Write (Fee Delegation)
+You can make a **"transaction"** that including **payment request** to feepayer when you want to execute the Smart Contract.
+
+
+<CH.Spotlight>
+<CH.Code>
+
+```js writeWithFeeDelegation.js
+const ethers = require("ethers");
+const { Wallet } = require("@klaytn/ethers-ext");
+
+async function main() {
+
+    const senderAddr = '0xa2a8854b1802d8cd5de631e690817c253d6a9153' 
+    const senderPriv = '0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8' 
+
+    const feePayerAddr = '0xcb0eb737dfda52756495a5e08a9b37aab3b271da'
+    const feePayerPriv = '0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4'
+
+    const recieverAddr = '0xc40b6909eb7085590e1c26cb3becc25368e249e9' 
+
+
+    const provider = new ethers.providers.JsonRpcProvider('https://public-en-baobab.klaytn.net');
+
+    const address = "0xab48cCef4f569480d677Ad467178d526a9209F4A";
+
+    const abi = [
+
+        // Read-Only Functions
+        "function balanceOf(address owner) view returns (uint256)",
+
+        "function decimals() view returns (uint8)",
+
+        "function symbol() view returns (string)",
+
+        // Authenticated Functions
+        "function transfer(address to, uint amount) returns (bool)",
+
+        // Events
+        "event Transfer(address indexed from, address indexed to, uint amount)"
+
+    ];
+
+    const senderWallet = new Wallet(senderPriv, provider);
+    
+    const erc20_rw = new ethers.Contract(address, abi, senderWallet);
+
+    tx = await erc20_rw.populateTransaction.transfer( recieverAddr, "1" );
+    console.log( tx );
+
+    const feeDelegatedTx = {
+        type: 0x31,
+        to: tx.to,
+        value: 0,  
+        from: tx.from,
+        input: tx.data,
+    }; 
+
+    const popTx= await senderWallet.populateTransaction(feeDelegatedTx);
+    console.log(popTx);
+
+    const senderTxHashRLP = await senderWallet.signTransaction(popTx);
+    console.log('senderTxHashRLP', senderTxHashRLP);
+
+    // fee payer
+    const feePayerWallet = new Wallet(feePayerPriv, provider);
+
+    tx = feePayerWallet.decodeTxFromRLP( senderTxHashRLP );
+    tx.feePayer = feePayerAddr;
+    console.log(tx);
+
+    const sentTx = await feePayerWallet.sendTransactionAsFeePayer(tx);
+    console.log('sentTx', sentTx);
+
+    const rc = await sentTx.wait();
+    console.log('receipt', rc);
+
+    console.log(await erc20_rw.balanceOf(senderAddr)); 
+    console.log(await erc20_rw.balanceOf(recieverAddr)); 
+}
+
+main();
+```
+
+
+
+
+---
+```zsh output
+❯ node writeWithFeeDelegation.js
+output
+```
+</CH.Code>
+
+---
+Import necessary libraries and modules
+```js writeWithFeeDelegation.js focus=1:2
+
+```
+---
+Define sender's address and private key
+```js writeWithFeeDelegation.js focus=6:7
+
+```
+---
+Define fee payer's address and private key
+```js writeWithFeeDelegation.js focus=9:10
+
+```
+---
+Define Receiver's address
+```js writeWithFeeDelegation.js focus=12
+
+```
+---
+Define Ethereum provider
+```js writeWithFeeDelegation.js focus=15
+
+```
+---
+Define smart contract address and ABI
+```js writeWithFeeDelegation.js focus=17:34
+
+```
+---
+Create wallets for sender
+```js writeWithFeeDelegation.js focus=36
+
+```
+---
+Create an instance of the ERC20 contract
+```js writeWithFeeDelegation.js focus=38
+
+```
+---
+Populate transfer transaction
+```js writeWithFeeDelegation.js focus=40:41
+
+```
+---
+Create a fee-delegated transaction
+```js writeWithFeeDelegation.js focus=43:49
+
+```
+---
+Populate transaction for fee payer
+```js writeWithFeeDelegation.js focus=51:52
+
+```
+---
+Decode transaction from RLP format and set fee payer
+```js writeWithFeeDelegation.js focus=54:55
+```
+---
+Create a wallet for fee payer
+```js writeWithFeeDelegation.js focus=57:58
+
+```
+---
+Sign the transaction with the sender's private key
+```js writeWithFeeDelegation.js focus=60:62
+
+```
+
+---
+Send transaction as fee payer
+```js writeWithFeeDelegation.js focus=64:65
+
+```
+---
+Wait for transaction receipt
+```js writeWithFeeDelegation.js focus=67:68
+
+```
+---
+Print token balances
+```js writeWithFeeDelegation.js focus=70:71
+
+```
+
+
+</CH.Spotlight>
