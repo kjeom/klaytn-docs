@@ -1,0 +1,121 @@
+# Write
+You can make a **"transaction"** interacting with a Smart Contract when you **need to update some state ** in the contract.
+
+<CH.Spotlight>
+<CH.Code>
+
+```js smartContractWrite.js
+const ethers = require("ethers");
+const { Wallet } = require("@klaytn/ethers-ext");
+
+async function main() {
+
+    const senderAddr = '0xa2a8854b1802d8cd5de631e690817c253d6a9153' 
+    const senderPriv = '0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8' 
+    const recieverAddr = '0xc40b6909eb7085590e1c26cb3becc25368e249e9' 
+
+    const provider = new ethers.providers.JsonRpcProvider('https://public-en-baobab.klaytn.net');
+    const wallet = new Wallet(senderPriv, provider);
+
+    const abi = [
+        // Read-Only Functions
+        "function balanceOf(address owner) view returns (uint256)",
+        "function decimals() view returns (uint8)",
+        "function symbol() view returns (string)",
+
+        // Authenticated Functions
+        "function transfer(address to, uint amount) returns (bool)",
+
+        // Events
+        "event Transfer(address indexed from, address indexed to, uint amount)"
+    ];
+
+    // This can be an address or an ENS name
+    const address = "0xab48cCef4f569480d677Ad467178d526a9209F4A";
+
+    const erc20_rw = new ethers.Contract(address, abi, wallet);
+
+    // Transfer 1.23 tokens to the ENS name "ricmoo.eth"
+    tx = await erc20_rw.transfer( recieverAddr, "1" );
+
+    // Wait for the transaction to be mined...
+    await tx.wait();
+
+    // After!
+    console.log(await erc20_rw.balanceOf(senderAddr));
+    // '99'
+
+    console.log(await erc20_rw.balanceOf(recieverAddr));
+    // '1'
+}
+
+main();
+
+```
+
+
+
+
+---
+```zsh output
+❯ node smartContractWrite.js
+output
+```
+</CH.Code>
+
+
+---
+Import utils from ethers, @klaytn/ethers-ext
+```js smartContractWrite.js focus=1:2
+
+```
+---
+Define sender address and private key, reciever address
+```js smartContractWrite.js focus=6:8
+
+```
+---
+Create a provider instance using RPC provider
+```js smartContractWrite.js focus=10
+
+```
+---
+Load user wallet from private key
+```js smartContractWrite.js focus=11
+
+```
+---
+Define contract ABI to interact with
+```js smartContractWrite.js focus=13:23
+
+```
+---
+Define contract address
+```js smartContractWrite.js focus=27
+
+```
+---
+Create a contract refer to a ERC_20 token
+```js smartContractWrite.js focus=29
+
+```
+---
+Create a transfer transaction with the contract created and send it to network
+```js smartContractWrite.js focus=31:32
+
+```
+---
+Wait for the transaction to be mined
+```js smartContractWrite.js focus=34:35
+
+```
+---
+Check the sender and receiver balance to see the change in their balance
+
+```js smartContractWrite.js focus=37:42
+
+```
+
+
+</CH.Spotlight>
+

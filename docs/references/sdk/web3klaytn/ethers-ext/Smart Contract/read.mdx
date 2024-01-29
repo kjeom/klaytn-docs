@@ -1,0 +1,108 @@
+# Read
+You can call functions in Smart Contract via "Call" RPC API. What you can call here is limited to **view functions** that is not changing any states in the Contract.
+
+<CH.Spotlight>
+<CH.Code>
+
+```js SmartContractView.js
+const { Wallet } = require("@klaytn/ethers-ext");
+const ethers = require("ethers");
+
+
+async function main() {
+  const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
+  const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+
+  const provider = new ethers.providers.JsonRpcProvider("https://public-en-baobab.klaytn.net");
+  const wallet = new Wallet(senderPriv, provider);
+
+  const abi = [
+    "function balanceOf(address owner) view returns (uint256)",
+    "function decimals() view returns (uint8)",
+    "function symbol() view returns (string)",
+
+    "function transfer(address to, uint amount) returns (bool)",
+
+    "event Transfer(address indexed from, address indexed to, uint amount)"
+  ];
+
+  const address = "0xab48cCef4f569480d677Ad467178d526a9209F4A";
+
+  
+  const erc20 = new ethers.Contract(address, abi, provider);
+
+  const symbol = await erc20.symbol();
+  const balance = await erc20.balanceOf(senderAddr);
+
+  console.log(`\nReading from ${address}`);
+  console.log(`Symbol: ${symbol}`);
+  console.log(`Balance Returned: ${balance}`);
+}
+
+main();
+```
+
+
+
+
+---
+```zsh output
+❯ js SmartContractView.js
+output
+```
+</CH.Code>
+
+---
+Import utils from ethers and @klaytn/ether-ext
+```js SmartContractView.js focus=1:2
+
+```
+---
+Define sender address and private key
+```js SmartContractView.js focus=6:7
+
+```
+---
+Define web3 provider from RPC endpoint and ethers
+```js SmartContractView.js focus=9
+
+```
+---
+Define user wallet from private key
+```js SmartContractView.js focus=10
+
+```
+---
+Define contract ABI to interact with
+```js SmartContractView.js focus=12:20
+
+```
+---
+Define contract address
+```js SmartContractView.js focus=22
+
+```
+---
+Create a contract instanct form ethers
+```js SmartContractView.js focus=25
+
+```
+---
+get contract token symbol from contract
+```js SmartContractView.js focus=27
+
+```
+---
+get sender token balance from contract
+```js SmartContractView.js focus=28
+
+```
+---
+Get the ouput
+```js SmartContractView.js focus=30:32
+
+```
+
+
+
+</CH.Spotlight>

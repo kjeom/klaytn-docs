@@ -1,0 +1,101 @@
+# Read
+You can call functions in Smart Contract via "Call" RPC API. What you can call here is limited to **view functions** that is not changing any states in the Contract.
+
+<CH.Spotlight>
+<CH.Code>
+
+```py smart_contract_interaction.py
+from web3 import Web3
+
+w3 = Web3(Web3.HTTPProvider('https://public-en-baobab.klaytn.net'))
+
+def contract_interaction():
+    c = w3.eth.contract(
+      address="0x3dC1dA8F305A8919750a5CA3A50bBA78914691DC",
+      abi=[{
+          "inputs": [],
+          "name": "sayCustomMsg",
+          "outputs": [
+              {
+                  "internalType": "string",
+                  "name": "",
+                  "type": "string"
+              }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "sayHelloWorld",
+          "outputs": [
+              {
+                  "internalType": "string",
+                  "name": "",
+                  "type": "string"
+              }
+          ],
+          "stateMutability": "pure",
+          "type": "function"
+        },
+        {
+          "inputs": [
+              {
+                  "internalType": "string",
+                  "name": "newMessage",
+                  "type": "string"
+              }
+          ],
+          "name": "update",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    )
+
+    # call view function
+    print('\ncurrent message : ' + c.functions.sayHelloWorld().call())
+
+contract_interaction()
+
+```
+---
+```zsh output
+❯ py smart_contract_interaction.py
+output
+```
+</CH.Code>
+
+---
+Import web3 to interact with smart contract
+```py smart_contract_interaction.py focus=1
+
+```
+---
+Create a web3 instance using RPC endpoint and web3 library
+```py smart_contract_interaction.py focus=3
+
+```
+---
+create a contract instance
+```py smart_contract_interaction.py focus=6
+
+```
+---
+Define contract address
+```py smart_contract_interaction.py focus=7
+
+```
+---
+Define contract ABI
+```py smart_contract_interaction.py focus=8:47
+
+```
+---
+Call the function in the ABI using the contract created
+```py smart_contract_interaction.py focus=50:51
+
+```
+
+</CH.Spotlight>
