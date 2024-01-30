@@ -1,0 +1,145 @@
+# Public Account Key
+
+**AccountKeyPublic** is used for accounts having one public key. If an account has an AccountKeyPublic object, the transaction validation process is done like below:
+
+<CH.Spotlight>
+<CH.Code>
+
+```java RecoverTransactionWithPubkeyExample.java
+package org.web3j.example;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import org.web3j.crypto.KlayCredentials;
+import org.web3j.crypto.KlayRawTransaction;
+import org.web3j.crypto.KlayTransactionEncoder;
+import org.web3j.crypto.transaction.type.TxType;
+import org.web3j.crypto.transaction.type.TxType.Type;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthChainId;
+import org.web3j.protocol.http.HttpService;
+import org.web3j.protocol.klaytn.Web3j;
+import org.web3j.protocol.klaytn.core.method.response.KlayRecoverFromTransactionResponse;
+import org.web3j.utils.Numeric;
+
+/**
+ * 
+ */
+public class RecoverTransactionWithPubkeyExample implements keySample {
+        /**
+         * 
+         */
+
+        public static void run() throws IOException {
+                Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
+                KlayCredentials credentials1 = KlayCredentials.create(keySample.PUBLIC_KEY_privkey,
+                                keySample.PUBLIC_KEY_address);
+
+                BigInteger GAS_PRICE = BigInteger.valueOf(50000000000L);
+                BigInteger GAS_LIMIT = BigInteger.valueOf(6721950);
+                String from = credentials1.getAddress();
+                EthChainId EthchainId = web3j.ethChainId().send();
+                long chainId = EthchainId.getChainId().longValue();
+                String to = "0x000000000000000000000000000000000000dead";
+                BigInteger nonce = web3j.ethGetTransactionCount(from, DefaultBlockParameterName.LATEST).send()
+                                .getTransactionCount();
+                BigInteger value = BigInteger.valueOf(100);
+
+                TxType.Type type = Type.VALUE_TRANSFER;
+
+                KlayRawTransaction raw = KlayRawTransaction.createTransaction(
+                                type,
+                                nonce,
+                                GAS_PRICE,
+                                GAS_LIMIT,
+                                to,
+                                value,
+                                from);
+
+                byte[] signedMessage = KlayTransactionEncoder.signMessage(raw, chainId, credentials1);
+
+                String hexValue = Numeric.toHexString(signedMessage);
+                String blockNumber = "latest";
+
+                KlayRecoverFromTransactionResponse response = web3j.klayRecoverFromTransaction(hexValue, blockNumber)
+                                .send();
+                System.out.println("Original address : " + from);
+                System.out.println("Result address : " + response.getResult());
+
+                web3j.shutdown();
+
+        }
+
+}
+```
+
+
+
+
+---
+```zsh output
+❯ java RecoverTransactionWithPubkeyExample.java
+output
+```
+</CH.Code>
+
+
+
+---
+Import necessary utils from web3j
+```java RecoverTransactionWithPubkeyExample.java focus=1:15
+
+```
+
+---
+Create a Web3j instance with the Baobab testnet endpoint
+```java RecoverTransactionWithPubkeyExample.java focus=26
+
+```
+
+---
+Create KlayCredentials instance with a public key
+```java RecoverTransactionWithPubkeyExample.java focus=27:28
+
+```
+
+---
+Set transaction parameters
+```java RecoverTransactionWithPubkeyExample.java focus=30:38
+
+```
+
+---
+Define the transaction type
+```java RecoverTransactionWithPubkeyExample.java focus=40
+
+```
+
+---
+Sign the transaction with the public key
+```java RecoverTransactionWithPubkeyExample.java focus=42:49
+
+```
+
+---
+Convert the signed message to hexadecimal
+```java RecoverTransactionWithPubkeyExample.java focus=51:53
+
+```
+
+---
+Perform transaction recovery and print the result
+```java RecoverTransactionWithPubkeyExample.java focus=54:59
+
+```
+
+---
+Shutdown the Web3j instance
+
+```java RecoverTransactionWithPubkeyExample.java focus=61
+
+```
+
+
+
+</CH.Spotlight>
