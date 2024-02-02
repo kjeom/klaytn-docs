@@ -10,7 +10,7 @@ In order for a transaction to be valid for an account associated with **AccountK
 <CH.Spotlight>
 <CH.Code>
 
-```js functionName.js
+```js recoverMultisigSignature.js
 const { KlaytnWeb3, TxType, AccountKeyType, toPeb, getPublicKeyFromPrivate } = require("@klaytn/web3js-ext");
 const { Web3 } = require("web3");
 
@@ -48,8 +48,6 @@ async function updateAccount() {
     }
   };
 
-  // The example senderAddr actually requires only 2 signature,
-  // but we use 3 signatures to show different ways to sign a transaction.
 
   // sign 1: First signer sign from the tx object
   const signResult1 = await senderAccount1.signTransaction(tx);
@@ -75,9 +73,6 @@ async function sendTx() {
     value: toPeb("0.01", "KLAY"),
     gasLimit: 100000,
   };
-
-  // The example senderAddr actually requires only 2 signature,
-  // but we use 3 signatures to show different ways to sign a transaction.
 
   // sign 1: First signer sign from the tx object
   const signResult1 = await senderAccount1.signTransaction(tx);
@@ -119,27 +114,118 @@ async function main() {
 }
 main().catch(console.error);
 ```
-
-
-
-
 ---
 ```zsh output
-❯ node functionName.js
+❯ node recoverMultisigSignature.js
 output
 ```
 </CH.Code>
 
 
+---
+Import neccessary utils from web3 and @klaytn/web3js-ext
+```js recoverMultisigSignature.js focus=1:2
 
+```
+---
+Create a web3 connection using Web3 provider
+```js recoverMultisigSignature.js focus=4:5
 
+```
+---
+Define sender address with 3 different private keys, receiver address
+```js recoverMultisigSignature.js focus=7:11
 
+```
+---
+Create 3 different accounts from sender private keys
+```js recoverMultisigSignature.js focus=13:15
+
+```
+---
+Update the account
+```js recoverMultisigSignature.js focus=98
+
+```
+---
+Create 3 public keys from pre-defined private keys
+```js recoverMultisigSignature.js focus=18:21
+
+```
+---
+Create an AccountUpdate transaction
+```js recoverMultisigSignature.js focus=23:36
+
+```
+---
+Sign the transaction object with wallet 1
+```js recoverMultisigSignature.js focus=39:41
+
+```
+---
+Sign the raw transaction with wallet 2
+```js recoverMultisigSignature.js focus=43:45
+
+```
+---
+Sign again with wallet 3 for the raw transaction signed by wallet 2
+```js recoverMultisigSignature.js focus=47:49
+
+```
+---
+Send the last signed transaction to network
+```js recoverMultisigSignature.js focus=51:52
+
+```
+---
+Send a transfer transaction
+```js recoverMultisigSignature.js focus=99
+
+```
+---
+Create a transfer transaction object
+```js recoverMultisigSignature.js focus=56:62
+
+```
+---
+Sign the transaction object with wallet 1
+```js recoverMultisigSignature.js focus=64:66
+
+```
+---
+Sign the raw transaction with wallet 2
+```js recoverMultisigSignature.js focus=68:70
+
+```
+---
+Sign again with wallet 3 for the raw transaction signed by wallet 2
+```js recoverMultisigSignature.js focus=72:74
+
+```
+---
+Send the last signed transaction to network
+```js recoverMultisigSignature.js focus=76:77
+
+```
 
 ---
+Recover address from message
+```js recoverMultisigSignature.js focus=100
 
+```
+---
+Sign a message with senderPriv1 key
+```js recoverMultisigSignature.js focus=81:85
 
+```
+---
+Recover address **using web3.eth.account.recover**
+```js recoverMultisigSignature.js focus=87:89
 
-```js functionName.js focus=1
+```
+---
+Recover using web3.klay.recoverFromMesage
+```js recoverMultisigSignature.js focus=91:93
 
 ```
 

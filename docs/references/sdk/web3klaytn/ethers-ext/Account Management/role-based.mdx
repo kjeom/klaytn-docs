@@ -5,13 +5,11 @@
 <CH.Spotlight>
 <CH.Code>
 
-```js functionName.js
+```js roleBasedAccountKey.js
 const { ethers } = require("ethers");
-
 const { Wallet, TxType, AccountKeyType, parseKlay } = require("@klaytn/ethers-ext");
 
 const senderAddr = "0x5bd2fb3c21564c023a4a735935a2b7a238c4ccea";
-// const senderPriv = "0x9ba8cb8f60044058a9e6f815c5c42d3a216f47044c61a1750b6d29ddc7f34bda";
 const senderRoleTransactionPriv = "0xc9668ccd35fc20587aa37a48838b48ccc13cf14dd74c8999dd6a480212d5f7ac";
 const senderRoleAccountUpdatePriv = "0x9ba8cb8f60044058a9e6f815c5c42d3a216f47044c61a1750b6d29ddc7f34bda";
 const senderRoleFeePayerPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
@@ -84,13 +82,9 @@ async function main() {
 }
 main().catch(console.error);
 ```
-
-
-
-
 ---
 ```zsh output
-❯ node functionName.js
+❯ node roleBasedAccountKey.js
 output
 ```
 </CH.Code>
@@ -101,10 +95,89 @@ output
 
 
 ---
+Import necessary utils from ethers and @klaytn/ether-ext
+```js roleBasedAccountKey.js focus=1:2
 
+```
+---
+Define sender address and roles specific private keys, receiver address
+```js roleBasedAccountKey.js focus=4:8
 
+```
+---
+Create a web3 connectoin using JsonRpcProvider and baobab RPC endpoint
+```js roleBasedAccountKey.js focus=10
 
-```js functionName.js focus=1
+```
+---
+Create 2 different wallets using defined private keys
+```js roleBasedAccountKey.js focus=11:12
+
+```
+---
+Update the account
+```js roleBasedAccountKey.js focus=71
+
+```
+---
+create 3 different public key froms pre-defined private keys
+```js roleBasedAccountKey.js focus=15:18
+
+```
+---
+create a transaction object to update sender account with new private key
+```js roleBasedAccountKey.js focus=20:32
+
+```
+---
+
+Use the **updaterWallet** wallet to send the transaction to network
+```js roleBasedAccountKey.js focus=34:35
+
+```
+---
+Wait for the transaction receipt
+```js roleBasedAccountKey.js focus=37:38
+
+```
+---
+Send a transfer transaction
+```js roleBasedAccountKey.js focus=72
+
+```
+---
+Create a transfer transaction object
+```js roleBasedAccountKey.js focus=42:48
+
+```
+---
+Use the **txWallet** wallet to send the transaction to network
+```js roleBasedAccountKey.js focus=50:51
+
+```
+---
+Wait for the transaction receipt
+```js roleBasedAccountKey.js focus=53:54
+
+```
+---
+Recover the address from message
+```js roleBasedAccountKey.js focus=73
+
+```
+---
+sign a message with the txWallet
+```js roleBasedAccountKey.js focus=58:61
+
+```
+---
+Retreive wallet address from the signed message
+```js roleBasedAccountKey.js focus=63:64
+
+```
+---
+Recover the address from message use klay_recoverFromMessage
+```js roleBasedAccountKey.js focus=66:67
 
 ```
 

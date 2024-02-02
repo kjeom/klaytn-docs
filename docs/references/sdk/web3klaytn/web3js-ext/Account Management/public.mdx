@@ -5,12 +5,10 @@
 <CH.Spotlight>
 <CH.Code>
 
-```js functionName.js
+```js recoverPublicAccountKey.js
 const { KlaytnWeb3, TxType, AccountKeyType, toPeb, getPublicKeyFromPrivate } = require("@klaytn/web3js-ext");
 const { Web3 } = require("web3");
 
-// Using senderPriv == senderNewPriv to execute this example repeatedly.
-// But you might want to register a different private key.
 const senderAddr = "0xfb60ded0ae96fe04eed6450aead860aa9d57128e";
 const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
 const senderNewPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
@@ -86,7 +84,7 @@ main().catch(console.error);
 
 ---
 ```zsh output
-❯ node functionName.js
+❯ node recoverPublicAccountKey.js
 output
 ```
 </CH.Code>
@@ -94,15 +92,92 @@ output
 
 
 
-
-
 ---
-
-
-
-```js functionName.js focus=1
+Import neccessary utils from web3 and @klaytn/web3js-ext
+```js recoverPublicAccountKey.js focus=1:2
 
 ```
 
+---
+Define sender address with orignal and new private key, receiver address
+```js recoverPublicAccountKey.js focus=4:7
+
+```
+---
+Create a web3 connection using Web3 provider
+```js recoverPublicAccountKey.js focus=9:10
+
+```
+---
+Create 2 accounts from sender private keys
+```js recoverPublicAccountKey.js focus=9:12
+
+```
+---
+Update the account
+```js recoverPublicAccountKey.js focus=65
+
+```
+---
+Create new public key from pre-defined new private key
+```js recoverPublicAccountKey.js focus=15:16
+
+```
+---
+Create an AccountUpdate transaction
+```js recoverPublicAccountKey.js focus=18:25
+
+```
+---
+Sign the transaction object with sender account
+```js recoverPublicAccountKey.js focus=27:28
+
+```
+---
+Send the  signed transaction to network
+```js recoverPublicAccountKey.js focus=30:31
+
+```
+---
+Send a transfer transaction
+```js recoverPublicAccountKey.js focus=66
+
+```
+---
+Create a transfer transaction object
+```js recoverPublicAccountKey.js focus=35:40
+
+```
+---
+Sign the transaction object with sender's new wallet
+```js recoverPublicAccountKey.js focus=42:43
+
+```
+---
+Send the signed transaction to network
+```js recoverPublicAccountKey.js focus=45:46
+
+```
+
+---
+Recover address from message
+```js recoverPublicAccountKey.js focus=67
+
+```
+---
+Sign a message with old private key
+```js recoverPublicAccountKey.js focus=50:53
+
+```
+---
+Recover address **using web3.eth.account.recover**
+```js recoverPublicAccountKey.js focus=55:57
+
+```
+---
+Recover using web3.klay.recoverFromMesage
+```js recoverPublicAccountKey.js focus=59:61
+
+```
 
 </CH.Spotlight>
