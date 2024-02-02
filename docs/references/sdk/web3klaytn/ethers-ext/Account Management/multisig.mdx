@@ -10,13 +10,11 @@ In order for a transaction to be valid for an account associated with **AccountK
 <CH.Spotlight>
 <CH.Code>
 
-```js functionName.js
+```js multisigAccountKey.js
 const { ethers } = require("ethers");
-
 const { Wallet, TxType, AccountKeyType, parseKlay } = require("@klaytn/ethers-ext");
 
 const senderAddr = "0x82c6a8d94993d49cfd0c1d30f0f8caa65782cc7e";
-// const senderPriv = "0xa32c30608667d43be2d652bede413f12a649dd1be93440878e7f712d51a6768a";
 const senderNewPriv1 = "0xa32c30608667d43be2d652bede413f12a649dd1be93440878e7f712d51a6768a";
 const senderNewPriv2 = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
 const senderNewPriv3 = "0xc9668ccd35fc20587aa37a48838b48ccc13cf14dd74c8999dd6a480212d5f7ac";
@@ -48,8 +46,6 @@ async function updateAccount() {
     }
   };
 
-  // The example senderAddr actually requires only 2 signature,
-  // but we use 3 signatures to show different ways to sign a transaction.
 
   // sign 1: First signer sign from the tx object
   const populatedTx = await wallet1.populateTransaction(tx);
@@ -77,8 +73,6 @@ async function sendTx() {
     gasLimit: 100000,
   };
 
-  // The example senderAddr actually requires only 2 signature,
-  // but we use 3 signatures to show different ways to sign a transaction.
 
   // sign 1: First signer sign from the tx object
   const populatedTx = await wallet1.populateTransaction(tx);
@@ -129,16 +123,109 @@ output
 ```
 </CH.Code>
 
-
-
-
-
-
 ---
+Import necessary utils from ethers and @klaytn/ether-ext
+```js multisigAccountKey.js focus=1:2
 
+```
+---
+Define sender address and private keys, receiver address
+```js multisigAccountKey.js focus=4:8
 
+```
+---
+Create a web3 connectoin using JsonRpcProvider and baobab RPC endpoint
+```js multisigAccountKey.js focus=10
 
-```js functionName.js focus=1
+```
+---
+Create 3 different wallets using defined private keys
+```js multisigAccountKey.js focus=11:13
+
+```
+---
+Update the account
+```js multisigAccountKey.js focus=95
+
+```
+---
+create 3 public keys from private key
+```js multisigAccountKey.js focus=16:19
+
+```
+---
+create a transaction object to update sender account with these new private keys
+```js multisigAccountKey.js focus=21:34
+
+```
+---
+Use first wallet to sign the transaction object
+```js multisigAccountKey.js focus=37:40
+
+```
+---
+Use the second wallet to sign the raw transaction from the first wallet
+```js multisigAccountKey.js focus=42:44
+
+```
+---
+Use the third wallet to sign the second signed transaction and send it to network
+```js multisigAccountKey.js focus=46:48
+
+```
+---
+Wait for the transaction receipt
+```js multisigAccountKey.js focus=50:51
+
+```
+---
+Send a transfer transaction
+```js multisigAccountKey.js focus=96
+
+```
+---
+Create a transfer transaction object
+```js multisigAccountKey.js focus=55:61
+
+```
+---
+Use first wallet to sign the transaction object
+```js multisigAccountKey.js focus=64:67
+
+```
+---
+Use the second wallet to sign the raw transaction from the first wallet
+```js multisigAccountKey.js focus=69:71
+
+```
+---
+Use the third wallet to sign the second signed transaction and send it to network
+```js multisigAccountKey.js focus=73:75
+
+```
+---
+Wait for the transaction receipt
+```js multisigAccountKey.js focus=77:78
+
+```
+---
+Recover the address from message
+```js multisigAccountKey.js focus=97
+
+```
+---
+sign a message with wallet 3
+```js multisigAccountKey.js focus=82:85
+
+```
+---
+Retreive wallet 1 from message signed from wallet 3
+```js multisigAccountKey.js focus=87:88
+
+```
+---
+Retreive wallet 2 from message signed from wallet 3
+```js multisigAccountKey.js focus=90:91
 
 ```
 

@@ -10,7 +10,7 @@ In order for a transaction to be valid for an account associated with **AccountK
 <CH.Spotlight>
 <CH.Code>
 
-```js functionName.js
+```py multisig_rlp_encode_decode.py
 from web3py_ext import extend
 from web3 import Web3
 from web3py_ext.utils.klaytn_utils import to_pretty
@@ -49,23 +49,30 @@ multisig_rlp_encode_decode()
 
 ---
 ```zsh output
-❯ node functionName.js
+❯ py multisig_rlp_encode_decode.py
 output
 ```
 </CH.Code>
 
-
-
-
-
-
 ---
-
-
-
-```js functionName.js focus=1
+Import necessary utils from web3py, web3py_ext and web3
+```py multisig_rlp_encode_decode.py focus=1:4
 
 ```
+---
+Define a multisig account key
+```py multisig_rlp_encode_decode.py focus=7:24
 
+```
+---
+Serialize the multisig account key to RLP-encoded format
+```py multisig_rlp_encode_decode.py focus=25:26
+
+```
+---
+Deserialize the RLP-encoded multisig account key back into its original form, use **to_pretty** utils to get better formatted result
+```py multisig_rlp_encode_decode.py focus=27:28
+
+```
 
 </CH.Spotlight>

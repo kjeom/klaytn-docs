@@ -5,7 +5,7 @@
 <CH.Spotlight>
 <CH.Code>
 
-```js functionName.js
+```js recoverRoleBasedAccountKey.js
 const { KlaytnWeb3, TxType, AccountKeyType, toPeb, getPublicKeyFromPrivate } = require("@klaytn/web3js-ext");
 const { Web3 } = require("web3");
 
@@ -92,21 +92,98 @@ main().catch(console.error);
 
 ---
 ```zsh output
-❯ node functionName.js
+❯ node recoverRoleBasedAccountKey.js
 output
 ```
 </CH.Code>
 
 
+---
+Import neccessary utils from web3 and @klaytn/web3js-ext
+```js recoverRoleBasedAccountKey.js focus=1:2
 
-
-
+```
 
 ---
+Define sender address with 3 different role-based private keys, receiver address
+```js recoverRoleBasedAccountKey.js focus=4:8
 
+```
+---
+Create a web3 connection using Web3 provider
+```js recoverRoleBasedAccountKey.js focus=10:11
 
+```
+---
+Create updaterAccount and txAccount from sender private keys
+```js recoverRoleBasedAccountKey.js focus=12:13
 
-```js functionName.js focus=1
+```
+---
+Update the account
+```js recoverRoleBasedAccountKey.js focus=74
+
+```
+---
+Create 3 public keys from pre-defined private keys
+```js recoverRoleBasedAccountKey.js focus=16:19
+
+```
+---
+Create an AccountUpdate transaction
+```js recoverRoleBasedAccountKey.js focus=21:33
+
+```
+---
+Sign the transaction object with updaterAccount wallet
+```js recoverRoleBasedAccountKey.js focus=35:36
+
+```
+---
+Send the signed transaction to network
+```js recoverRoleBasedAccountKey.js focus=38:39
+
+```
+---
+Send a transfer transaction
+```js recoverRoleBasedAccountKey.js focus=75
+
+```
+---
+Create a transfer transaction object
+```js recoverRoleBasedAccountKey.js focus=43:49
+
+```
+---
+Sign the transaction object with txAccount wallet
+```js recoverRoleBasedAccountKey.js focus=51:52
+
+```
+
+---
+Send the signed transaction to network
+```js recoverRoleBasedAccountKey.js focus=54:55
+
+```
+
+---
+Recover address from message
+```js recoverRoleBasedAccountKey.js focus=76
+
+```
+---
+Sign a message with txAccount key
+```js recoverRoleBasedAccountKey.js focus=59:62
+
+```
+---
+Recover address **using web3.eth.account.recover**
+```js recoverRoleBasedAccountKey.js focus=64:66
+
+```
+---
+Recover using web3.klay.recoverFromMesage
+```js recoverRoleBasedAccountKey.js focus=68:70
 
 ```
 

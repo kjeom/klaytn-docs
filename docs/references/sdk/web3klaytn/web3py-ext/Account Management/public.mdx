@@ -5,7 +5,7 @@
 <CH.Spotlight>
 <CH.Code>
 
-```js functionName.js
+```py pubkey_rlp_encode_decode.py
 from web3py_ext import extend
 from web3 import Web3
 from eth_account import Account
@@ -27,29 +27,38 @@ def pubkey_rlp_encode_decode():
 pubkey_rlp_encode_decode()
 
 ```
-
-
-
-
 ---
 ```zsh output
-❯ node functionName.js
+❯ py pubkey_rlp_encode_decode.py
 output
 ```
 </CH.Code>
 
-
-
-
-
-
 ---
+Import necessary utils from web3py, web3py_ext and web3
 
-
-
-```js functionName.js focus=1
+```py pubkey_rlp_encode_decode.py focus=1:6
 
 ```
+---
+Generate an Ethereum account from a private key
+```py pubkey_rlp_encode_decode.py focus=9
 
+```
+---
+Define a public key-based account key as a dictionary
+```py pubkey_rlp_encode_decode.py focus=10:13
+
+```
+---
+Serialize the public key-based account key to RLP-encoded format
+```py pubkey_rlp_encode_decode.py focus=14:15
+
+```
+---
+Deserialize the RLP-encoded public key-based account key back into its original form, use **to_pretty** utils to get better formatted result
+```py pubkey_rlp_encode_decode.py focus=16:17
+
+```
 
 </CH.Spotlight>

@@ -5,13 +5,10 @@
 <CH.Spotlight>
 <CH.Code>
 
-```js functionName.js
+```js recoverPublicKey.js
 const { ethers } = require("ethers");
-
 const { Wallet, TxType, AccountKeyType, parseKlay } = require("@klaytn/ethers-ext");
 
-// Using senderPriv == senderNewPriv to execute this example repeatedly.
-// But you should use AccountKeyPublic to register a different private key.
 const senderAddr = "0xe15cd70a41dfb05e7214004d7d054801b2a2f06b";
 const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
 const senderNewPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
@@ -82,23 +79,98 @@ main().catch(console.error);
 
 ---
 ```zsh output
-❯ node functionName.js
+❯ node recoverPublicKey.js
 output
 ```
 </CH.Code>
 
-
-
-
-
-
 ---
-
-
-
-```js functionName.js focus=1
+Import necessary utils from ethers and @klaytn/ether-ext
+```js recoverPublicKey.js focus=1:2
 
 ```
+---
+Define sender address and private keys, receiver address
+```js recoverPublicKey.js focus=4:7
+
+```
+---
+Create a web3 connectoin using JsonRpcProvider and baobab RPC endpoint
+```js recoverPublicKey.js focus=9
+
+```
+---
+Create 2 different wallets using defined private keys
+```js recoverPublicKey.js focus=10:11
+
+```
+---
+Update the account
+```js recoverPublicKey.js focus=61
+
+```
+---
+create new public key from **senderNewPriv** key
+```js recoverPublicKey.js focus=14
+
+```
+---
+create a transaction object to update sender account with new private key
+```js recoverPublicKey.js focus=16:23
+
+```
+---
+
+Use the wallet to send the transaction to network
+```js recoverPublicKey.js focus=25:26
+
+```
+---
+Wait for the transaction receipt
+```js recoverPublicKey.js focus=28:29
+
+```
+---
+Send a transfer transaction
+```js recoverPublicKey.js focus=62
+
+```
+---
+Create a transfer transaction object
+```js recoverPublicKey.js focus=33:38
+
+```
+---
+Use the wallet to send the transaction to network
+```js recoverPublicKey.js focus=40:41
+
+```
+---
+Wait for the transaction receipt
+```js recoverPublicKey.js focus=43:44
+
+```
+---
+Recover the address from message
+```js recoverPublicKey.js focus=63
+
+```
+---
+sign a message with the new wallet
+```js recoverPublicKey.js focus=48:51
+
+```
+---
+Retreive wallet address from the signed message
+```js recoverPublicKey.js focus=53:54
+
+```
+---
+Recover the address from message use klay_recoverFromMessage
+```js recoverPublicKey.js focus=56:57
+
+```
+
 
 
 </CH.Spotlight>
