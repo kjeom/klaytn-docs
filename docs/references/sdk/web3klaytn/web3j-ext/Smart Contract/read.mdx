@@ -4,33 +4,86 @@ You can call functions in Smart Contract via "Call" RPC API. What you can call h
 <CH.Spotlight>
 <CH.Code>
 
-```js functionName.js
+```java ReadContractExample.java
+package org.web3j.example.contracts;
 
+import java.math.BigInteger;
+import org.web3j.crypto.KlayCredentials;
+import org.web3j.example.keySample;
+import org.web3j.protocol.http.HttpService;
+import org.web3j.protocol.klaytn.Web3j;
+import org.web3j.tx.gas.StaticGasProvider;
+
+public class ReadContractExample {
+    /**
+     * @throws Exception
+     * 
+     */
+    public static void run() throws Exception {
+
+        Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
+        KlayCredentials credentials = KlayCredentials.create(keySample.LEGACY_KEY_privkey);
+        String contractAddr = "0x95Be48607498109030592C08aDC9577c7C2dD505";
+        BigInteger GAS_PRICE = BigInteger.valueOf(50000000000L);
+        BigInteger GAS_LIMIT = BigInteger.valueOf(6721950);
+        StaticGasProvider gasProvider = new StaticGasProvider(GAS_PRICE, GAS_LIMIT);
+        Counter counter = Counter.load(contractAddr, web3j, credentials.convertToCredentials(), gasProvider);
+        System.out.println("Contract Call(number) Result : " + counter.number().send());
+
+    }
+
+}
 
 ```
-
-
-
-
 ---
 ```zsh output
-❯ node functionName.js
+❯ java ReadContractExample.java
 output
 ```
 </CH.Code>
 
 
-
-
-
-
 ---
-
-
-
-```js functionName.js focus=1
+Import necessary utils from web3j
+```java ReadContractExample.java focus=3:8
 
 ```
+---
+Initialize Web3j instance using the Baobab testnet URL
+```java ReadContractExample.java focus=17
+
+```
+---
+Create KlayCredentials for the sender
+```java ReadContractExample.java focus=18
+
+```
+---
+Specify the address of the deployed contract
+```java ReadContractExample.java focus=19
+
+```
+---
+Define gas price and gas limit for contract transactions
+```java ReadContractExample.java focus=20:21
+
+```
+---
+Create a gas provider with static gas price and gas limit
+```java ReadContractExample.java focus=22
+
+```
+---
+Load the contract using its address, Web3j instance, credentials, and gas provider
+```java ReadContractExample.java focus=23
+
+```
+---
+Call the 'number' function of the contract to retrieve the stored value
+```java ReadContractExample.java focus=24
+
+```
+
 
 
 </CH.Spotlight>
