@@ -5,33 +5,232 @@ You can make a **"transaction"** that including **payment request** to feepayer 
 <CH.Spotlight>
 <CH.Code>
 
-```js functionName.js
+```java WriteContractWithFeeDelegationExample.java
+package org.web3j.example.contracts;
 
+import java.io.IOException;
+import java.math.BigInteger;
+import org.web3j.crypto.KlayCredentials;
+import org.web3j.crypto.KlayRawTransaction;
+import org.web3j.crypto.KlayTransactionEncoder;
+import org.web3j.crypto.transaction.type.TxType;
+import org.web3j.crypto.transaction.type.TxTypeFeeDelegatedSmartContractExecution;
+import org.web3j.crypto.transaction.type.TxType.Type;
+import org.web3j.example.keySample;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.request.Transaction;
+import org.web3j.protocol.core.methods.response.EthChainId;
+import org.web3j.protocol.core.methods.response.EthSendTransaction;
+import org.web3j.protocol.http.HttpService;
+import org.web3j.protocol.klaytn.Web3j;
+import org.web3j.utils.Numeric;
+import org.web3j.protocol.klaytn.core.method.response.KlayCallResponse;
+import org.web3j.protocol.klaytn.core.method.response.TransactionReceipt;
+import org.web3j.tx.gas.StaticGasProvider;
+import org.web3j.abi.FunctionEncoder;
+import org.web3j.abi.datatypes.Function;
+import org.web3j.abi.datatypes.Uint;
+import java.util.Arrays;
+import java.util.Collections;
 
+public class WriteContractWithFeeDelegationExample {
+        /**
+         * @throws Exception
+         * 
+         */
+        public static void run() throws Exception {
+
+                Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
+                KlayCredentials credentials = KlayCredentials.create(keySample.LEGACY_KEY_privkey);
+                KlayCredentials credentials_feePayer = KlayCredentials.create(keySample.LEGACY_KEY_FEEPAYER_privkey);
+                String contractAddr = "0x95Be48607498109030592C08aDC9577c7C2dD505";
+                BigInteger GAS_PRICE = BigInteger.valueOf(50000000000L);
+                BigInteger GAS_LIMIT = BigInteger.valueOf(6721950);
+                String from = credentials.getAddress();
+                BigInteger nonce = web3j.ethGetTransactionCount(from, DefaultBlockParameterName.LATEST).send()
+                                .getTransactionCount();
+                EthChainId EthchainId = web3j.ethChainId().send();
+                long chainId = EthchainId.getChainId().longValue();
+                BigInteger value = BigInteger.ZERO;
+                StaticGasProvider gasProvider = new StaticGasProvider(GAS_PRICE, GAS_LIMIT);
+                Counter counter = Counter.load(contractAddr, web3j, credentials.convertToCredentials(), gasProvider);
+
+                // Get number before Contract Write
+                System.out.println("number before : " + counter.number().send());
+
+                // Contract Write (Set number with setNumber function)
+                Function function = new Function("setNumber", // Function name
+                                Arrays.asList(new Uint(BigInteger.valueOf(50))), // Function input parameters
+                                Collections.emptyList()); // Function returned parameters
+                String txData = FunctionEncoder.encode(function);
+                byte[] payload = Numeric.hexStringToByteArray(txData);
+
+                TxType.Type type = Type.FEE_DELEGATED_SMART_CONTRACT_EXECUTION;
+
+                KlayRawTransaction raw = KlayRawTransaction.createTransaction(
+                                type,
+                                nonce,
+                                GAS_PRICE,
+                                GAS_LIMIT,
+                                contractAddr,
+                                value,
+                                from,
+                                payload);
+
+                // Sign as sender
+                byte[] signedMessage = KlayTransactionEncoder.signMessage(raw, chainId, credentials);
+
+                // Sign same message as Fee payer
+                signedMessage = KlayTransactionEncoder.signMessageAsFeePayer(raw, chainId, credentials_feePayer);
+                String hexValue = Numeric.toHexString(signedMessage);
+                web3j.ethSendRawTransaction(hexValue).send();
+                try {
+                        Thread.sleep(2000);
+                } catch (Exception e) {
+                        System.out.println(e);
+                }
+                // Get number after Contract Write
+                System.out.println("number after : " + counter.number().send());
+
+                web3j.shutdown();
+        }
+}
 ```
-
-
-
-
 ---
 ```zsh output
-❯ node functionName.js
+❯ java WriteContractWithFeeDelegationExample.java
 output
 ```
 </CH.Code>
 
 
-
-
-
-
 ---
-
-
-
-```js functionName.js focus=1
+Import necessary utils from web3j
+```java WriteContractWithFeeDelegationExample.java focus=3:26
 
 ```
+
+---
+Initialize Web3j instance using the Baobab testnet URL
+```java WriteContractWithFeeDelegationExample.java focus=35
+
+```
+
+---
+Create KlayCredentials for the sender
+```java WriteContractWithFeeDelegationExample.java focus=36
+
+```
+
+---
+Create KlayCredentials for the fee payer
+```java WriteContractWithFeeDelegationExample.java focus=37
+
+```
+
+---
+Specify the address of the deployed contract
+```java WriteContractWithFeeDelegationExample.java focus=38
+
+```
+
+---
+Define gas price and gas limit for contract transactions
+```java WriteContractWithFeeDelegationExample.java focus=39:40
+
+```
+
+---
+Get the sender's address
+```java WriteContractWithFeeDelegationExample.java focus=41
+
+```
+
+---
+Get the sender's nonce
+```java WriteContractWithFeeDelegationExample.java focus=42
+
+```
+
+---
+Get the chain ID
+```java WriteContractWithFeeDelegationExample.java focus=44:45
+
+```
+
+---
+Set value to zero since it's a contract call
+```java WriteContractWithFeeDelegationExample.java focus=46
+
+```
+
+---
+Create a gas provider with static gas price and gas limit
+```java WriteContractWithFeeDelegationExample.java focus=47
+
+```
+
+---
+Load the contract using its address, Web3j instance, credentials, and gas provider
+```java WriteContractWithFeeDelegationExample.java focus=48
+
+```
+
+---
+Get the current number stored in the contract before writing
+```java WriteContractWithFeeDelegationExample.java focus=50:51
+
+```
+
+---
+Create a function to set the number with the desired value
+```java WriteContractWithFeeDelegationExample.java focus=53:58
+
+```
+
+---
+Define the transaction type as fee delegated smart contract execution
+```java WriteContractWithFeeDelegationExample.java focus=60
+
+```
+
+---
+Create a raw transaction
+```java WriteContractWithFeeDelegationExample.java focus=62:70
+
+```
+---
+Sign the transaction as the sender
+```java WriteContractWithFeeDelegationExample.java focus=72:73
+
+```
+---
+Sign the same message as the fee payer
+```java WriteContractWithFeeDelegationExample.java focus=75:76
+
+```
+---
+Send the raw transaction to the network
+```java WriteContractWithFeeDelegationExample.java focus=77:78
+
+```
+---
+Delay for a short time to ensure the transaction is processed
+```java WriteContractWithFeeDelegationExample.java focus=79:83
+
+```
+---
+Get the updated number stored in the contract after writing
+```java WriteContractWithFeeDelegationExample.java focus=84:85
+
+```
+---
+Shutdown the Web3j instance
+```java WriteContractWithFeeDelegationExample.java focus=87
+
+```
+
+
 
 
 </CH.Spotlight>

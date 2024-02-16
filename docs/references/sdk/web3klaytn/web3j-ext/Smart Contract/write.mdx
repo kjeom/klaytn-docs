@@ -4,25 +4,99 @@ You can make a **"transaction"** interacting with a Smart Contract when you **ne
 <CH.Spotlight>
 <CH.Code>
 
-```js functionName.js
+```java WriteContractExample.java
+package org.web3j.example.contracts;
 
+import java.math.BigInteger;
+import org.web3j.crypto.KlayCredentials;
+import org.web3j.example.keySample;
+import org.web3j.protocol.http.HttpService;
+import org.web3j.protocol.klaytn.Web3j;
+import org.web3j.tx.gas.StaticGasProvider;
 
+public class WriteContractExample {
+    /**
+     * @throws Exception 
+     * 
+     */
+    public static void run() throws Exception {
+
+        Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
+        KlayCredentials credentials = KlayCredentials.create(keySample.LEGACY_KEY_privkey);
+        String contractAddr = "0x95Be48607498109030592C08aDC9577c7C2dD505";
+        BigInteger GAS_PRICE = BigInteger.valueOf(50000000000L);
+        BigInteger GAS_LIMIT = BigInteger.valueOf(6721950);
+        StaticGasProvider gasProvider = new StaticGasProvider(GAS_PRICE, GAS_LIMIT);
+        Counter counter = Counter.load(contractAddr, web3j, credentials.convertToCredentials(), gasProvider);
+
+        // Get number before Contract Write
+        System.out.println("number before : " + counter.number().send());
+
+        // Contract Write (increment function)
+        counter.increment().send();
+
+        // Get number after Contract Write
+        System.out.println("number after : " + counter.number().send());
+    }
+
+}
 ```
-
-
-
-
 ---
 ```zsh output
-❯ node functionName.js
+❯ java WriteContractExample.java
 output
 ```
 </CH.Code>
 
 
 ---
+Import necessary utils from web3j
+```java WriteContractExample.java focus=3:8
 
-```js functionName.js focus=1
+```
+---
+Create a web3 connection using Baobab RPC endpoint and web3j
+```java WriteContractExample.java focus=17
+
+```
+---
+Create a wallet from a private key
+```java WriteContractExample.java focus=18
+
+```
+---
+Define smart contract address to interact with
+```java WriteContractExample.java focus=19
+
+```
+---
+Define gas price and gas limit for contract transactions
+```java WriteContractExample.java focus=20:21
+
+```
+---
+Create a gas provider with static gas price and gas limit
+```java WriteContractExample.java focus=22
+
+```
+---
+Load the contract using its address, Web3j instance, credentials, and gas provider
+```java WriteContractExample.java focus=23
+
+```
+---
+Get the current number stored in the contract before writing
+```java WriteContractExample.java focus=25:26
+
+```
+---
+Increment the number stored in the contract by calling the increment function
+```java WriteContractExample.java focus=28:29
+
+```
+---
+Get the updated number stored in the contract after writing
+```java WriteContractExample.java focus=31:32
 
 ```
 
