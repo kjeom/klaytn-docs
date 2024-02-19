@@ -11,27 +11,46 @@ Web3 SDKs support to interact with Smart Contract via contract instance, not low
 const ethers = require("ethers");
 const { Wallet } = require("@klaytn/ethers-ext");
 
+const senderAddr = "0x24e8efd18d65bcb6b3ba15a4698c0b0d69d13ff7";
+const senderPriv = "0x4a72b3d09c3d5e28e8652e0111f9c4ce252e8299aad95bb219a38eb0a3f4da49";
+
+const provider = new ethers.providers.JsonRpcProvider("https://public-en-baobab.klaytn.net");
+const wallet = new Wallet(senderPriv, provider);
+
+/* compiled in remix.ethereum.org (compiler: 0.8.18, optimizer: false)
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.13;
+
+contract Counter {
+    uint256 public number;
+    event SetNumber(uint256 number);
+
+    constructor(uint256 initNumber) {
+        number = initNumber;
+    }
+
+    function setNumber(uint256 newNumber) public {
+        number = newNumber;
+        emit SetNumber(number);
+    }
+
+    function increment() public {
+        number++;
+        emit SetNumber(number);
+    }
+}
+*/
+const bytecode = "0x608060405234801561001057600080fd5b5060405161031a38038061031a8339818101604052810190610032919061007a565b80600081905550506100a7565b600080fd5b6000819050919050565b61005781610044565b811461006257600080fd5b50565b6000815190506100748161004e565b92915050565b6000602082840312156100905761008f61003f565b5b600061009e84828501610065565b91505092915050565b610264806100b66000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c80633fb5c1cb146100465780638381f58a14610062578063d09de08a14610080575b600080fd5b610060600480360381019061005b9190610160565b61008a565b005b61006a6100cd565b604051610077919061019c565b60405180910390f35b6100886100d3565b005b806000819055507f331bb01bcf77ec721a35a558a7984e8e6ca33b507d3ee1dd13b76f64381e54d46000546040516100c2919061019c565b60405180910390a150565b60005481565b6000808154809291906100e5906101e6565b91905055507f331bb01bcf77ec721a35a558a7984e8e6ca33b507d3ee1dd13b76f64381e54d460005460405161011b919061019c565b60405180910390a1565b600080fd5b6000819050919050565b61013d8161012a565b811461014857600080fd5b50565b60008135905061015a81610134565b92915050565b60006020828403121561017657610175610125565b5b60006101848482850161014b565b91505092915050565b6101968161012a565b82525050565b60006020820190506101b1600083018461018d565b92915050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b60006101f18261012a565b91507fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8203610223576102226101b7565b5b60018201905091905056fea264697066735822122012162749eb9714a6df7a34741c39edb78cf6e3d6d3e888872232594da5a1353164736f6c63430008120033";
+const abi = '[{"inputs":[{"internalType":"uint256","name":"initNumber","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"number","type":"uint256"}],"name":"SetNumber","type":"event"},{"inputs":[],"name":"increment","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"number","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"newNumber","type":"uint256"}],"name":"setNumber","outputs":[],"stateMutability":"nonpayable","type":"function"}]';
+
 async function main() {
+  const factory = new ethers.ContractFactory(abi, bytecode, wallet);
+  const contract = await factory.deploy(100);
 
-    const senderAddr = '0xa2a8854b1802d8cd5de631e690817c253d6a9153' 
-    const senderPriv = '0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8' 
-    
-    const provider = new ethers.providers.JsonRpcProvider('https://public-en-baobab.klaytn.net');
-    const wallet = new Wallet(senderPriv, provider);
-
-    const bytecode = "0x608060405234801561001057600080fd5b506040516103bc3803806103bc83398101604081905261002f9161007c565b60405181815233906000907fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef9060200160405180910390a333600090815260208190526040902055610094565b60006020828403121561008d578081fd5b5051919050565b610319806100a36000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c8063313ce5671461005157806370a082311461006557806395d89b411461009c578063a9059cbb146100c5575b600080fd5b604051601281526020015b60405180910390f35b61008e610073366004610201565b6001600160a01b031660009081526020819052604090205490565b60405190815260200161005c565b604080518082018252600781526626bcaa37b5b2b760c91b6020820152905161005c919061024b565b6100d86100d3366004610222565b6100e8565b604051901515815260200161005c565b3360009081526020819052604081205482111561014b5760405162461bcd60e51b815260206004820152601a60248201527f696e73756666696369656e7420746f6b656e2062616c616e6365000000000000604482015260640160405180910390fd5b336000908152602081905260408120805484929061016a9084906102b6565b90915550506001600160a01b0383166000908152602081905260408120805484929061019790849061029e565b90915550506040518281526001600160a01b0384169033907fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef9060200160405180910390a350600192915050565b80356001600160a01b03811681146101fc57600080fd5b919050565b600060208284031215610212578081fd5b61021b826101e5565b9392505050565b60008060408385031215610234578081fd5b61023d836101e5565b946020939093013593505050565b6000602080835283518082850152825b818110156102775785810183015185820160400152820161025b565b818111156102885783604083870101525b50601f01601f1916929092016040019392505050565b600082198211156102b1576102b16102cd565b500190565b6000828210156102c8576102c86102cd565b500390565b634e487b7160e01b600052601160045260246000fdfea2646970667358221220d80384ce584e101c5b92e4ee9b7871262285070dbcd2d71f99601f0f4fcecd2364736f6c63430008040033";
-
-    const abi = [
-        "constructor(uint totalSupply)"
-    ];
-
-    const factory = new ethers.ContractFactory(abi, bytecode, wallet);
-
-    const contract = await factory.deploy("100");
-
-    console.log( contract.address );
-
-    console.log( await contract.deployTransaction.wait() );
+  const sentTx = contract.deployTransaction;
+  const receipt = await sentTx.wait();
+  console.log("receipt", receipt);
+  console.log("deployed address", receipt.contractAddress);
 }
 
 main();
@@ -54,47 +73,50 @@ Import necessary utils from ethers and @klaytn/ethers-ext
 ```
 ---
 Define sender address and private key
-```js smartContractDeploy.js focus=6:7
+```js smartContractDeploy.js focus=4:5
 
 ```
 ---
 Connect to web3 using RPC endpoint
-```js smartContractDeploy.js focus=9
+```js smartContractDeploy.js focus=7
 
 ```
 ---
 create a wallet from sender private key and web3 provider
-```js smartContractDeploy.js focus=10
+```js smartContractDeploy.js focus=8
 
 ```
 
 ---
 Define contract byte code to deploy
-```js smartContractDeploy.js focus=12
+```js smartContractDeploy.js focus=33
 
 ```
 ---
 Define contract ABI
-```js smartContractDeploy.js focus=14:16
+```js smartContractDeploy.js focus=34
 
 ```
 ---
-Deploy, setting total supply to 100 tokens (assigned to the deployer)
-
-```js smartContractDeploy.js focus=20
+Create a contract factory which deploy a contract instance with defined Abi and byte code
+```js smartContractDeploy.js focus=37
 
 ```
 ---
-You can get the contract address while it's being deployed to network
-```js smartContractDeploy.js focus=22
+Deploy the contract with initialize number value equal to 100
+```js smartContractDeploy.js focus=38
 
 ```
 
 ---
-Wait for the contract to be deployed
-```js smartContractDeploy.js focus=24
+Send the transaction and wait for the receipt
+```js smartContractDeploy.js focus=40:42
 
 ```
+---
+Get the deployed address of new contract
+```js smartContractDeploy.js focus=43
 
+```
 
 </CH.Spotlight>
