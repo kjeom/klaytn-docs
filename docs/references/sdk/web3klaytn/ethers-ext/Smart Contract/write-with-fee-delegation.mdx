@@ -7,76 +7,68 @@ You can make a **"transaction"** that including **payment request** to feepayer 
 
 ```js writeWithFeeDelegation.js
 const ethers = require("ethers");
-const { Wallet } = require("@klaytn/ethers-ext");
+const { Wallet, TxType } = require("@klaytn/ethers-ext");
+
+const senderAddr = "0x24e8efd18d65bcb6b3ba15a4698c0b0d69d13ff7";
+const senderPriv = "0x4a72b3d09c3d5e28e8652e0111f9c4ce252e8299aad95bb219a38eb0a3f4da49";
+const feePayerAddr = "0xcb0eb737dfda52756495a5e08a9b37aab3b271da";
+const feePayerPriv = "0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4";
+
+const provider = new ethers.providers.JsonRpcProvider("https://public-en-baobab.klaytn.net");
+const senderWallet = new Wallet(senderPriv, provider);
+const feePayerWallet = new Wallet(feePayerPriv, provider);
+
+/* compiled in remix.ethereum.org (compiler: 0.8.18, optimizer: false)
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.13;
+
+contract Counter {
+    uint256 public number;
+    event SetNumber(uint256 number);
+
+    constructor(uint256 initNumber) {
+        number = initNumber;
+    }
+
+    function setNumber(uint256 newNumber) public {
+        number = newNumber;
+        emit SetNumber(number);
+    }
+
+    function increment() public {
+        number++;
+        emit SetNumber(number);
+    }
+}
+*/
+const abi = '[{"inputs":[{"internalType":"uint256","name":"initNumber","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"number","type":"uint256"}],"name":"SetNumber","type":"event"},{"inputs":[],"name":"increment","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"number","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"newNumber","type":"uint256"}],"name":"setNumber","outputs":[],"stateMutability":"nonpayable","type":"function"}]';
+const contractAddr = "0x95Be48607498109030592C08aDC9577c7C2dD505";
 
 async function main() {
+  const counter = new ethers.Contract(contractAddr, abi, senderWallet);
 
-    const senderAddr = '0xa2a8854b1802d8cd5de631e690817c253d6a9153' 
-    const senderPriv = '0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8' 
+  console.log("number before", (await counter.number()).toString());
 
-    const feePayerAddr = '0xcb0eb737dfda52756495a5e08a9b37aab3b271da'
-    const feePayerPriv = '0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4'
+  const data = (await counter.populateTransaction.increment()).data;
+  const tx = {
+    type: TxType.FeeDelegatedSmartContractExecution,
+    from: senderAddr,
+    to: contractAddr,
+    value: 0,
+    data: data,
+  };
 
-    const recieverAddr = '0xc40b6909eb7085590e1c26cb3becc25368e249e9' 
+  // Sign transaction by sender
+  const populatedTx = await senderWallet.populateTransaction(tx);
+  const senderTxHashRLP = await senderWallet.signTransaction(populatedTx);
+  console.log("senderTxHashRLP", senderTxHashRLP);
 
+  // Sign and send transaction by fee payer
+  const sentTx = await feePayerWallet.sendTransactionAsFeePayer(senderTxHashRLP);
+  const receipt = await sentTx.wait();
+  console.log("receipt", receipt);
 
-    const provider = new ethers.providers.JsonRpcProvider('https://public-en-baobab.klaytn.net');
-
-    const address = "0xab48cCef4f569480d677Ad467178d526a9209F4A";
-
-    const abi = [
-
-        // Read-Only Functions
-        "function balanceOf(address owner) view returns (uint256)",
-
-        "function decimals() view returns (uint8)",
-
-        "function symbol() view returns (string)",
-
-        // Authenticated Functions
-        "function transfer(address to, uint amount) returns (bool)",
-
-        // Events
-        "event Transfer(address indexed from, address indexed to, uint amount)"
-
-    ];
-
-    const senderWallet = new Wallet(senderPriv, provider);
-    
-    const erc20_rw = new ethers.Contract(address, abi, senderWallet);
-
-    tx = await erc20_rw.populateTransaction.transfer( recieverAddr, "1" );
-    console.log( tx );
-
-    const feeDelegatedTx = {
-        type: 0x31,
-        to: tx.to,
-        value: 0,  
-        from: tx.from,
-        input: tx.data,
-    }; 
-
-    const popTx= await senderWallet.populateTransaction(feeDelegatedTx);
-    console.log(popTx);
-
-    const senderTxHashRLP = await senderWallet.signTransaction(popTx);
-    console.log('senderTxHashRLP', senderTxHashRLP);
-
-    // fee payer
-    const feePayerWallet = new Wallet(feePayerPriv, provider);
-
-    tx = feePayerWallet.decodeTxFromRLP( senderTxHashRLP );
-    tx.feePayer = feePayerAddr;
-    console.log(tx);
-
-    const sentTx = await feePayerWallet.sendTransactionAsFeePayer(tx);
-    console.log('sentTx', sentTx);
-
-    const rc = await sentTx.wait();
-    console.log('receipt', rc);
-
-    console.log(await erc20_rw.balanceOf(senderAddr)); 
-    console.log(await erc20_rw.balanceOf(recieverAddr)); 
+  console.log("number after", (await counter.number()).toString());
 }
 
 main();
@@ -92,89 +84,72 @@ output
 ```
 </CH.Code>
 
+
 ---
-Import necessary libraries and modules
+Import necessary utils from ethers and @klaytn/ethers-ext
 ```js writeWithFeeDelegation.js focus=1:2
 
 ```
 ---
-Define sender's address and private key
-```js writeWithFeeDelegation.js focus=6:7
+Define sender, fee payer address and private key
+```js writeWithFeeDelegation.js focus=4:7
 
 ```
 ---
-Define fee payer's address and private key
-```js writeWithFeeDelegation.js focus=9:10
+Connect to web3 using RPC endpoint
+```js writeWithFeeDelegation.js focus=9
 
 ```
 ---
-Define Receiver's address
-```js writeWithFeeDelegation.js focus=12
+create two wallet from sender, fee payer private key and web3 provider
+```js writeWithFeeDelegation.js focus=10:11
 
 ```
----
-Define Ethereum provider
-```js writeWithFeeDelegation.js focus=15
 
-```
 ---
-Define smart contract address and ABI
-```js writeWithFeeDelegation.js focus=17:34
-
-```
----
-Create wallets for sender
+Define contract Abi to interact with
 ```js writeWithFeeDelegation.js focus=36
 
 ```
 ---
-Create an instance of the ERC20 contract
-```js writeWithFeeDelegation.js focus=38
+Define contract address
+```js writeWithFeeDelegation.js focus=37
 
 ```
 ---
-Populate transfer transaction
-```js writeWithFeeDelegation.js focus=40:41
+Create a contract instance using pre-defined contract Abi and address
+```js writeWithFeeDelegation.js focus=40
 
 ```
 ---
-Create a fee-delegated transaction
-```js writeWithFeeDelegation.js focus=43:49
-
-```
----
-Populate transaction for fee payer
-```js writeWithFeeDelegation.js focus=51:52
-
-```
----
-Decode transaction from RLP format and set fee payer
-```js writeWithFeeDelegation.js focus=54:55
-```
----
-Create a wallet for fee payer
-```js writeWithFeeDelegation.js focus=57:58
-
-```
----
-Sign the transaction with the sender's private key
-```js writeWithFeeDelegation.js focus=60:62
+Get the **number** value before updated
+```js writeWithFeeDelegation.js focus=42
 
 ```
 
 ---
-Send transaction as fee payer
-```js writeWithFeeDelegation.js focus=64:65
+Create a transaction data to update the **number** value
+```js writeWithFeeDelegation.js focus=44
 
 ```
 ---
-Wait for transaction receipt
-```js writeWithFeeDelegation.js focus=67:68
+Create a transaction object with data from previous step
+```js writeWithFeeDelegation.js focus=42:48
 
 ```
 ---
-Print token balances
-```js writeWithFeeDelegation.js focus=70:71
+Sign the transaction with sender wallet
+```js writeWithFeeDelegation.js focus=53:56
+
+```
+---
+Send the transaction to the network by fee payer wallet then wait for the receipt
+```js writeWithFeeDelegation.js focus=58:61
+
+```
+---
+Get the updated value **number**
+```js writeWithFeeDelegation.js focus=63
 
 ```
 

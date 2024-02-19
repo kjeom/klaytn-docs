@@ -5,57 +5,18 @@ You can call functions in Smart Contract via "Call" RPC API. What you can call h
 <CH.Code>
 
 ```py smart_contract_interaction.py
+from web3py_ext import extend
 from web3 import Web3
 
 w3 = Web3(Web3.HTTPProvider('https://public-en-baobab.klaytn.net'))
 
 def contract_interaction():
     c = w3.eth.contract(
-      address="0x3dC1dA8F305A8919750a5CA3A50bBA78914691DC",
-      abi=[{
-          "inputs": [],
-          "name": "sayCustomMsg",
-          "outputs": [
-              {
-                  "internalType": "string",
-                  "name": "",
-                  "type": "string"
-              }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "sayHelloWorld",
-          "outputs": [
-              {
-                  "internalType": "string",
-                  "name": "",
-                  "type": "string"
-              }
-          ],
-          "stateMutability": "pure",
-          "type": "function"
-        },
-        {
-          "inputs": [
-              {
-                  "internalType": "string",
-                  "name": "newMessage",
-                  "type": "string"
-              }
-          ],
-          "name": "update",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        }
-      ]
+      address="0x95Be48607498109030592C08aDC9577c7C2dD505",
+      abi = [{"inputs":[{"internalType":"uint256","name":"initNumber","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":False,"inputs":[{"indexed":False,"internalType":"uint256","name":"number","type":"uint256"}],"name":"SetNumber","type":"event"},{"inputs":[],"name":"increment","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"number","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"newNumber","type":"uint256"}],"name":"setNumber","outputs":[],"stateMutability":"nonpayable","type":"function"}]
     )
-
     # call view function
-    print('\ncurrent message : ' + c.functions.sayHelloWorld().call())
+    print('\nnumber : ', c.functions.number().call())
 
 contract_interaction()
 
@@ -69,32 +30,32 @@ output
 
 ---
 Import web3 to interact with smart contract
-```py smart_contract_interaction.py focus=1
+```py smart_contract_interaction.py focus=1:2
 
 ```
 ---
 Create a web3 instance using RPC endpoint and web3 library
-```py smart_contract_interaction.py focus=3
+```py smart_contract_interaction.py focus=4
 
 ```
 ---
-create a contract instance
-```py smart_contract_interaction.py focus=6
+create a contract instance with contract address and abi
+```py smart_contract_interaction.py focus=7:10
 
 ```
 ---
 Define contract address
-```py smart_contract_interaction.py focus=7
+```py smart_contract_interaction.py focus=8
 
 ```
 ---
 Define contract ABI
-```py smart_contract_interaction.py focus=8:47
+```py smart_contract_interaction.py focus=9
 
 ```
 ---
 Call the function in the ABI using the contract created
-```py smart_contract_interaction.py focus=50:51
+```py smart_contract_interaction.py focus=11:12
 
 ```
 

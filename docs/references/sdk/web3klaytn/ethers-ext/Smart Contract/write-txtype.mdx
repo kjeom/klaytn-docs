@@ -1,12 +1,10 @@
-# Write
-You can make a **"transaction"** interacting with a Smart Contract when you **need to update some state ** in the contract.
 
 <CH.Spotlight>
 <CH.Code>
 
-```js smartContractWrite.js
+```js writeTxType.js
 const ethers = require("ethers");
-const { Wallet } = require("@klaytn/ethers-ext");
+const { Wallet, TxType } = require("@klaytn/ethers-ext");
 
 const senderAddr = "0x24e8efd18d65bcb6b3ba15a4698c0b0d69d13ff7";
 const senderPriv = "0x4a72b3d09c3d5e28e8652e0111f9c4ce252e8299aad95bb219a38eb0a3f4da49";
@@ -45,7 +43,18 @@ async function main() {
 
   console.log("number before", (await counter.number()).toString());
 
-  const sentTx = await counter.increment();
+  const data = (await counter.populateTransaction.increment()).data;
+  const tx = {
+    type: TxType.SmartContractExecution,
+    from: senderAddr,
+    to: contractAddr,
+    value: 0,
+    data: data,
+  };
+
+  const sentTx = await wallet.sendTransaction(tx);
+  console.log("sentTx", sentTx.hash);
+
   const receipt = await sentTx.wait();
   console.log("receipt", receipt);
 
@@ -53,6 +62,7 @@ async function main() {
 }
 
 main();
+
 ```
 
 
@@ -60,69 +70,81 @@ main();
 
 ---
 ```zsh output
-❯ node smartContractWrite.js
+❯ node writeTxType.js
 output
 ```
 </CH.Code>
 
 
+
 ---
 Import necessary utils from ethers and @klaytn/ethers-ext
-```js smartContractWrite.js focus=1:2
+```js writeTxType.js focus=1:2
 
 ```
 ---
 Define sender address and private key
-```js smartContractWrite.js focus=4:5
+```js writeTxType.js focus=4:5
 
 ```
 ---
 Connect to web3 using RPC endpoint
-```js smartContractWrite.js focus=7
+```js writeTxType.js focus=7
 
 ```
 ---
 create a wallet from sender private key and web3 provider
-```js smartContractWrite.js focus=8
+```js writeTxType.js focus=8
 
 ```
 
 ---
 Define contract Abi to interact with
-```js smartContractWrite.js focus=33
+```js writeTxType.js focus=33
 
 ```
 ---
 Define contract address
-```js smartContractWrite.js focus=34
+```js writeTxType.js focus=34
 
 ```
 ---
 Create a contract instance using pre-defined contract Abi and address
-```js smartContractWrite.js focus=37
+```js writeTxType.js focus=37
 
 ```
 ---
 Get the **number** value before updated
-```js smartContractWrite.js focus=39
+```js writeTxType.js focus=39
+
+```
+
+---
+Create a transaction data to update the **number** value
+```js writeTxType.js focus=41
 
 ```
 ---
-Send a transaction to update the value using **increment** method of contract
-```js smartContractWrite.js focus=41
+Create a transaction object with data from previous step with type **SmartContractExecution**
+```js writeTxType.js focus=42:48
+
+```
+---
+Send the transaction to the network
+```js writeTxType.js focus=50:51
 
 ```
 ---
 Wait for the transaction and get the receipt
-```js smartContractWrite.js focus=42:43
+```js writeTxType.js focus=53:54
 
 ```
 ---
 Get the updated value **number**
-```js smartContractWrite.js focus=45
+```js writeTxType.js focus=56
 
 ```
 
 
-</CH.Spotlight>
 
+</CH.Spotlight>
