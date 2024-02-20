@@ -143,6 +143,7 @@ Create 3 different wallets using defined private keys
 ```js multisigAccountKey.js focus=11:13
 
 ```
+
 ---
 Update the account
 ```js multisigAccountKey.js focus=95
@@ -150,9 +151,20 @@ Update the account
 ```
 ---
 create 3 public keys from private key
+<CH.Code>
 ```js multisigAccountKey.js focus=16:19
 
 ```
+---
+```zsh output
+❯ node multisigAccountKey.js
+{
+  pub1: '0x021473839f05083617d532325ce8aa40edffb2bc79f1ce17c77cc41f92f027dd82',
+  pub2: '0x03dc9dccbd788c00fa98f7f4082f2f714e799bc0c29d63f04d48b54fe6250453cd',
+  pub3: '0x03f26489914098c5da51f0f646e3000da4d6197217df082b4f7ce1530f0a0cbf2a'
+}
+```
+</CH.Code>
 ---
 create a transaction object to update sender account with these new private keys
 ```js multisigAccountKey.js focus=21:34
@@ -160,24 +172,69 @@ create a transaction object to update sender account with these new private keys
 ```
 ---
 Use first wallet to sign the transaction object
+<CH.Code>
 ```js multisigAccountKey.js focus=37:40
 
 ```
 ---
+```zsh output
+❯ node multisigAccountKey.js
+rawTx1 0x20f8dd5f850ba43b7400830f42409482c6a8d94993d49cfd0c1d30f0f8caa65782cc7eb87204f86f02f86ce301a1021473839f05083617d532325ce8aa40edffb2bc79f1ce17c77cc41f92f027dd82e301a103dc9dccbd788c00fa98f7f4082f2f714e799bc0c29d63f04d48b54fe6250453cde301a103f26489914098c5da51f0f646e3000da4d6197217df082b4f7ce1530f0a0cbf2af847f8458207f5a00d22af15efcae17b8ac3d6725152121ff77c25c8a26ae465b145db8c829d7025a0793a234087e3aa51f8d1be1881de40beacabb31fbd722b300015b36853dba52e
+```
+</CH.Code>
+---
 Use the second wallet to sign the raw transaction from the first wallet
+<CH.Code>
 ```js multisigAccountKey.js focus=42:44
 
 ```
 ---
+```zsh output
+❯ node multisigAccountKey.js
+rawTx2 0x20f901245f850ba43b7400830f42409482c6a8d94993d49cfd0c1d30f0f8caa65782cc7eb87204f86f02f86ce301a1021473839f05083617d532325ce8aa40edffb2bc79f1ce17c77cc41f92f027dd82e301a103dc9dccbd788c00fa98f7f4082f2f714e799bc0c29d63f04d48b54fe6250453cde301a103f26489914098c5da51f0f646e3000da4d6197217df082b4f7ce1530f0a0cbf2af88ef8458207f5a00d22af15efcae17b8ac3d6725152121ff77c25c8a26ae465b145db8c829d7025a0793a234087e3aa51f8d1be1881de40beacabb31fbd722b300015b36853dba52ef8458207f6a0729042d2fd61a96688c8449d48ada4268388168296e87394f55ad7d89bed02d8a005b32668e4f6838f089cf99c38d817d5e9ca18c1616b1b0444116eacabad30a5
+```
+</CH.Code>
+---
 Use the third wallet to sign the second signed transaction and send it to network
+<CH.Code>
 ```js multisigAccountKey.js focus=46:48
 
 ```
 ---
+```zsh output
+❯ node multisigAccountKey.js
+sentTx3 0x8aad8055dba1a9399e12ffaa68efe315913195ae40b52f261f723f16add70468
+```
+</CH.Code>
+---
 Wait for the transaction receipt
+<CH.Code>
 ```js multisigAccountKey.js focus=50:51
 
 ```
+---
+```zsh output
+❯ node multisigAccountKey.js
+receipt {
+  to: '0x82C6a8D94993d49cfd0c1D30F0F8Caa65782cc7E',
+  from: '0x82C6a8D94993d49cfd0c1D30F0F8Caa65782cc7E',
+  contractAddress: null,
+  transactionIndex: 2,
+  gasUsed: BigNumber { _hex: '0x01b198', _isBigNumber: true },
+  logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  blockHash: '0xdc22aca464ce9d5a0721702ce42049bb8abc6675818c0be0d2e4d17ebd03ce26',
+  transactionHash: '0x8aad8055dba1a9399e12ffaa68efe315913195ae40b52f261f723f16add70468',
+  logs: [],
+  blockNumber: 146831028,
+  confirmations: 2,
+  cumulativeGasUsed: BigNumber { _hex: '0x077806', _isBigNumber: true },
+  effectiveGasPrice: BigNumber { _hex: '0x05d21dba00', _isBigNumber: true },
+  status: 1,
+  type: 0,
+  byzantium: true
+}
+```
+</CH.Code>
 ---
 Send a transfer transaction
 ```js multisigAccountKey.js focus=96
@@ -190,24 +247,69 @@ Create a transfer transaction object
 ```
 ---
 Use first wallet to sign the transaction object
+<CH.Code>
 ```js multisigAccountKey.js focus=64:67
 
 ```
 ---
+```zsh output
+❯ node multisigAccountKey.js
+rawTx1 0x08f88660850ba43b7400830186a094c40b6909eb7085590e1c26cb3becc25368e249e9872386f26fc100009482c6a8d94993d49cfd0c1d30f0f8caa65782cc7ef847f8458207f5a0b5bc701f0e55ac0ff1b2825d12a8d068219b7524c57f05a7d8b3507166faa0dba059e062fde3cdde82ef653e590fbc07a5085638a646b5171f7790407c5efbb073
+```
+</CH.Code>
+---
 Use the second wallet to sign the raw transaction from the first wallet
+<CH.Code>
 ```js multisigAccountKey.js focus=69:71
 
 ```
 ---
+```zsh output
+❯ node multisigAccountKey.js
+rawTx2 0x08f8cd60850ba43b7400830186a094c40b6909eb7085590e1c26cb3becc25368e249e9872386f26fc100009482c6a8d94993d49cfd0c1d30f0f8caa65782cc7ef88ef8458207f5a0b5bc701f0e55ac0ff1b2825d12a8d068219b7524c57f05a7d8b3507166faa0dba059e062fde3cdde82ef653e590fbc07a5085638a646b5171f7790407c5efbb073f8458207f6a0a6acb76af8ab5794f6f3e0a635f795d7f18aa8672505facaa616d4fa468de16aa075392ae8d28f6d8abcc3d1957b8f50f84baff24bb6c0b7ebc254c5c328a42d16
+```
+</CH.Code>
+---
 Use the third wallet to sign the second signed transaction and send it to network
+<CH.Code>
 ```js multisigAccountKey.js focus=73:75
 
 ```
 ---
+```zsh output
+❯ node multisigAccountKey.js
+sentTx3 0x4c32952cb21f9fe6da992401689b40aa7a73ad2712161530f645c68cf649b432
+```
+</CH.Code>
+---
 Wait for the transaction receipt
+<CH.Code>
 ```js multisigAccountKey.js focus=77:78
 
 ```
+---
+```zsh output
+❯ node multisigAccountKey.js
+receipt {
+  to: '0xC40B6909EB7085590E1c26Cb3beCC25368e249E9',
+  from: '0x82C6a8D94993d49cfd0c1D30F0F8Caa65782cc7E',
+  contractAddress: null,
+  transactionIndex: 2,
+  gasUsed: BigNumber { _hex: '0xc738', _isBigNumber: true },
+  logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  blockHash: '0xd49101bf340640099302baad86deba66d18c7b8613d3410a4ffae38789a7bd40',
+  transactionHash: '0x4c32952cb21f9fe6da992401689b40aa7a73ad2712161530f645c68cf649b432',
+  logs: [],
+  blockNumber: 146831036,
+  confirmations: 1,
+  cumulativeGasUsed: BigNumber { _hex: '0x069896', _isBigNumber: true },
+  effectiveGasPrice: BigNumber { _hex: '0x05d21dba00', _isBigNumber: true },
+  status: 1,
+  type: 0,
+  byzantium: true
+}
+```
+</CH.Code>
 ---
 Recover the address from message
 ```js multisigAccountKey.js focus=97
@@ -215,19 +317,44 @@ Recover the address from message
 ```
 ---
 sign a message with wallet 3
+<CH.Code>
 ```js multisigAccountKey.js focus=82:85
 
 ```
 ---
-Retreive wallet 1 from message signed from wallet 3
+```zsh output
+❯ node multisigAccountKey.js
+{
+  senderAddr: '0x82c6a8d94993d49cfd0c1d30f0f8caa65782cc7e',
+  msg: 'hello',
+  msghex: '0x68656c6c6f',
+  sig: '0x4bb3156dfd3349b974222b9ed754a3835802d920b63e8c07f41a75a174ce99d92a70d62e7a4b30d18599de61a882c59c0fd726883e3ce9955f8d5f60ce5b65211c'
+}
+```
+</CH.Code>
+---
+Retreive address using **ethers.utils.verifyMessage**
+<CH.Code>
 ```js multisigAccountKey.js focus=87:88
 
 ```
 ---
-Retreive wallet 2 from message signed from wallet 3
+```zsh output
+❯ node multisigAccountKey.js
+recoveredAddr lib 0xe15Cd70A41dfb05e7214004d7D054801b2a2f06b true
+```
+</CH.Code>
+---
+Retreive address using **klay_recoverFromMessage**
+<CH.Code>
 ```js multisigAccountKey.js focus=90:91
 
 ```
-
+---
+```zsh output
+❯ node multisigAccountKey.js
+recoveredAddr rpc 0xe15cd70a41dfb05e7214004d7d054801b2a2f06b true
+```
+</CH.Code>
 
 </CH.Spotlight>

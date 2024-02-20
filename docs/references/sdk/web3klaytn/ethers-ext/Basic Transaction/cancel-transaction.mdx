@@ -6,58 +6,33 @@
 <CH.Code>
 
 ```js TxCancelType.js
-const { Wallet, TxType, parseKlay } = require("@klaytn/ethers-ext");
 const ethers = require("ethers");
+const { Wallet, TxType } = require("@klaytn/ethers-ext");
 
 const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
 const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
-const recieverAddr = "0xc40b6909eb7085590e1c26cb3becc25368e249e9";
+
+const provider = new ethers.providers.JsonRpcProvider("https://public-en-baobab.klaytn.net");
+const wallet = new Wallet(senderPriv, provider);
 
 async function main() {
-  const provider = new ethers.providers.JsonRpcProvider("https://public-en-baobab.klaytn.net");
-  const wallet = new Wallet(senderPriv, provider);
-
-  let nextNonce = await wallet.getTransactionCount();
-  let tx = {
-    type: TxType.ValueTransfer,
-    nonce: nextNonce + 1,
-    to: recieverAddr,
-    value: parseKlay("0.01"),
-    from: senderAddr,
-  };
-
-  const nextTx = await wallet.sendTransaction(tx);
-  console.log("tx next + 1", nextTx);
-
-
-  let txCancel = {
+  const tx = {
     type: TxType.Cancel,
-    nonce: nextNonce + 1,
     from: senderAddr,
   };
-
-  const cancelTx = await wallet.sendTransaction(txCancel);
-  console.log("tx next + 1 Cancel", cancelTx);
-
-  tx.nonce = nextNonce;
 
   const sentTx = await wallet.sendTransaction(tx);
-  console.log("tx next", sentTx);
+  console.log("sentTx", sentTx.hash);
 
-  const rc = await sentTx.wait();
-  console.log("receipt", rc);
+  const receipt = await sentTx.wait();
+  console.log("receipt", receipt);
 }
 
 main();
 ```
-
-
-
-
 ---
 ```zsh output
 ❯ js TxCancelType.js
-output
 ```
 </CH.Code>
 
@@ -68,65 +43,110 @@ Import necessary libraries and modules
 
 ```
 ---
-Define sender, receiver addresses, and sender's private key
+Define sender addresses and private key
 
-```js TxCancelType.js focus=4:6
+```js TxCancelType.js focus=4:5
 
 ```
 ---
 Create a provider using the Klaytn Baobab testnet JSON-RPC URL
 
-```js TxCancelType.js focus=9
+```js TxCancelType.js focus=7
 
+```
+---
+
+Also, you can change the default provider. For example, using the alchemy provider.
+
+```js TxCancelType.js focus=7
+const ethers = require("ethers");
+const { Wallet, TxType } = require("@klaytn/ethers-ext");
+
+const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
+const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+
+const provider = new ethers.providers.JsonRpcProvider("https://klaytn-mainnet-rpc.allthatnode.com:8551");
+const wallet = new Wallet(senderPriv, provider);
+
+async function main() {
+  const tx = {
+    type: TxType.Cancel,
+    from: senderAddr,
+  };
+
+  const sentTx = await wallet.sendTransaction(tx);
+  console.log("sentTx", sentTx.hash);
+
+  const receipt = await sentTx.wait();
+  console.log("receipt", receipt);
+}
+
+main();
 ```
 ---
 Create a wallet using the sender's private key and the provider
 
-```js TxCancelType.js focus=10
+```js TxCancelType.js focus=8
 
 ```
 ---
-Send a ValueTransfer transaction with the next nonce+1
+Send a **TxType.Cancel** transaction by sender address
 
-```js TxCancelType.js focus=12:19
-
-```
----
-Send the ValueTransfer transaction and log the result
-
-```js TxCancelType.js focus=21:22
+```js TxCancelType.js focus=11:14
 
 ```
 ---
-Send a Cancel transaction with the next nonce+1
+Send the transaction and log the result
 
-```js TxCancelType.js focus=25
+<CH.Code>
+```js TxCancelType.js focus=16:17
 
 ```
+
+
 ---
-Send the Cancel transaction and log the result
 
-```js TxCancelType.js focus=31:32
-
+```zsh output
+❯ node TxCancelType.js
+sentTx 0x700631932d73747459fe941f7b9a4464a42dd40092d91668638b2e73a2a85f20
 ```
+
+</CH.Code>
+
 ---
-Send another ValueTransfer transaction with the next nonce
+Wait for the transaction receipt
+<CH.Code>
 
-```js TxCancelType.js focus=34
+```js TxCancelType.js focus=19:20
 
 ```
+
+
 ---
-Send the ValueTransfer transaction and log the result
 
-```js TxCancelType.js focus=36:37
-
+```zsh output
+❯ node TxCancelType.js
+receipt {
+  to: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
+  from: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
+  contractAddress: null,
+  transactionIndex: 0,
+  gasUsed: BigNumber { _hex: '0x5208', _isBigNumber: true },
+  logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  blockHash: '0x2189f4fe71717d3e3585d29599c7a0ff4668b5501d5a2602408e4ba5306b377d',
+  transactionHash: '0x700631932d73747459fe941f7b9a4464a42dd40092d91668638b2e73a2a85f20',
+  logs: [],
+  blockNumber: 146753209,
+  confirmations: 1,
+  cumulativeGasUsed: BigNumber { _hex: '0x5208', _isBigNumber: true },
+  effectiveGasPrice: BigNumber { _hex: '0x05d21dba00', _isBigNumber: true },
+  status: 1,
+  type: 0,
+  byzantium: true
+}
 ```
----
-Wait for the transaction receipt and log it
 
-```js TxCancelType.js focus=39:40
-
-```
+</CH.Code>
 
 
 </CH.Spotlight>
