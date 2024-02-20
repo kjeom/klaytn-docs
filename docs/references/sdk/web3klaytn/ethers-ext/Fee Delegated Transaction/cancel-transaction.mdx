@@ -6,78 +6,40 @@
 <CH.Code>
 
 ```js TxFeeDelegatedCancelType.js
-const { Wallet, TxType, parseKlay } = require("@klaytn/ethers-ext");
 const ethers = require("ethers");
+
+const { Wallet, TxType, parseKlay } = require("@klaytn/ethers-ext");
 
 const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
 const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
 const feePayerAddr = "0xcb0eb737dfda52756495a5e08a9b37aab3b271da";
 const feePayerPriv = "0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4";
-const recieverAddr = "0xc40b6909eb7085590e1c26cb3becc25368e249e9";
 
 const provider = new ethers.providers.JsonRpcProvider("https://public-en-baobab.klaytn.net");
-
-async function senderSign(nextNonce) {
-  const senderWallet = new Wallet(senderPriv, provider);
-
-  let txCancel = {
-    type: TxType.FeeDelegatedCancel,
-    nonce: nextNonce + 1,
-    from: senderAddr,
-  };
-
-  txCancel = await senderWallet.populateTransaction(txCancel);
-  console.log(txCancel);
-
-  const senderTxHashRLP = await senderWallet.signTransaction(txCancel);
-  console.log("senderTxHashRLP", senderTxHashRLP);
-
-  return senderTxHashRLP;
-}
-
-async function feePayerSign(senderTxHashRLP) {
-  const feePayerWallet = new Wallet(feePayerPriv, provider);
-
-  const txCancel = feePayerWallet.decodeTxFromRLP(senderTxHashRLP);
-  console.log(txCancel);
-
-  const cancelTx = await feePayerWallet.sendTransactionAsFeePayer(senderTxHashRLP);
-  console.log("tx next + 1 Cancel", cancelTx);
-}
+const senderWallet = new Wallet(senderPriv, provider);
+const feePayerWallet = new Wallet(feePayerPriv, provider);
 
 async function main() {
-  const wallet = new Wallet(senderPriv, provider);
-
-  let nextNonce = await wallet.getTransactionCount();
-  let tx = {
-    type: TxType.ValueTransfer,
-    nonce: nextNonce + 1,
-    to: recieverAddr,
-    value: parseKlay("0.01"),
+  const tx = {
+    type: TxType.FeeDelegatedCancel,
     from: senderAddr,
   };
 
-  const nextTx = await wallet.sendTransaction(tx);
-  console.log("tx next + 1", nextTx);
+  // Sign transaction by sender
+  const populatedTx = await senderWallet.populateTransaction(tx);
+  const senderTxHashRLP = await senderWallet.signTransaction(populatedTx);
+  console.log("senderTxHashRLP", senderTxHashRLP);
 
-  const senderTxHashRLP = await senderSign(nextNonce);
-  await feePayerSign(senderTxHashRLP);
+  // Sign and send transaction by fee payer
+  const sentTx = await feePayerWallet.sendTransactionAsFeePayer(senderTxHashRLP);
+  console.log("sentTx", sentTx.hash);
 
-  tx.nonce = nextNonce;
-  const sentTx = await wallet.sendTransaction(tx);
-  console.log("tx next", sentTx);
-
-  const rc = await sentTx.wait();
-  console.log("receipt", rc);
+  const receipt = await sentTx.wait();
+  console.log("receipt", receipt);
 }
 
 main();
-
 ```
-
-
-
-
 ---
 ```zsh output
 ❯ js TxFeeDelegatedCancelType.js
@@ -89,14 +51,14 @@ output
 Import necessary libraries and modules
 
 
-```js TxFeeDelegatedCancelType.js focus=1:2
+```js TxFeeDelegatedCancelType.js focus=1:3
 
 ```
 ---
-Define sender, fee payer, receiver addresses, and their private keys
+Define sender, fee payer addresses and private keys
 
 
-```js TxFeeDelegatedCancelType.js focus=4:8
+```js TxFeeDelegatedCancelType.js focus=5:8
 
 ```
 ---
@@ -108,73 +70,80 @@ Create a provider using the Klaytn Baobab testnet JSON-RPC URL
 ```
 ---
 
-Define a wallet using sender private key
-```js TxFeeDelegatedCancelType.js focus=41
+Define two wallets using sender and fee payer private keys
+```js TxFeeDelegatedCancelType.js focus=11:12
 
 ```
 ---
-
-Send a ValueTransfer transaction with the next nonce + 1
-```js TxFeeDelegatedCancelType.js focus=43:50
-
-```
----
-Send the ValueTransfer transaction and log the result
-
-```js TxFeeDelegatedCancelType.js focus=52:53
+Create a transaction with TxType.FeeDelegatedCancel
+```js TxFeeDelegatedCancelType.js focus=15:18
 
 ```
 ---
-Send a FeeDelegatedCancel transaction by the sender and fee payer
-
-```js TxFeeDelegatedCancelType.js focus=55:56
-
-```
----
-Create a FeeDelegatedCancel transaction with the next nonce+1
-
-
-```js TxFeeDelegatedCancelType.js focus=15:19
+Sign the transaction with sender wallet and print out the senderTxHashRLP
+<CH.Code>
+```js TxFeeDelegatedCancelType.js focus=20:23
 
 ```
----
-Populate the transaction with details from the wallet
 
 
-```js TxFeeDelegatedCancelType.js focus=21:22
-
-```
----
-Sign the transaction and obtain the sender's transaction hash in RLP format
-```js TxFeeDelegatedCancelType.js focus=24:25
-
-```
----
-Decode the sender's transaction hash in RLP format
-
-
-```js TxFeeDelegatedCancelType.js focus=33:34
-
-```
 ---
 
-Send the FeeDelegatedCancel transaction and log the result
-
-```js TxFeeDelegatedCancelType.js focus=36:37
-
+```zsh output
+❯ node TxFeeDelegatedCancelType.js
+senderTxHashRLP 0x39f86a820356850ba43b740082cd1494a2a8854b1802d8cd5de631e690817c253d6a9153f847f8458207f5a0ec92eaed1a4b88de5645122b78f1f060aa44e9a6f35d1804ed624dbf74e0c59fa01a9b1e1a4bc35fdb4d1d71ead6be57a15fd06945cf486cf3d0f10f11099db878
 ```
+
+</CH.Code>
 ---
-Send another ValueTransfer transaction with the next nonce
-
-```js TxFeeDelegatedCancelType.js focus=58:60
+Sign and send the transaction by fee payer wallet, then print out the sent transaction
+<CH.Code>
+```js TxFeeDelegatedCancelType.js focus=25:27
 
 ```
+
+
 ---
 
-Wait for the transaction receipt and log it
-```js TxFeeDelegatedCancelType.js focus=62:63
+```zsh output
+❯ node TxFeeDelegatedCancelType.js
+sentTx 0x88f96c02abd305e5395cfdc87515ba3a4f6139568a48ddeca66be286acf5be68
+```
+
+</CH.Code>
+---
+Wait for the transaction to complete and get the receipt
+<CH.Code>
+```js TxFeeDelegatedCancelType.js focus=29:30
 
 ```
+
+
+---
+
+```zsh output
+❯ node TxFeeDelegatedCancelType.js
+receipt {
+  to: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
+  from: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
+  contractAddress: null,
+  transactionIndex: 2,
+  gasUsed: BigNumber { _hex: '0x7918', _isBigNumber: true },
+  logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  blockHash: '0xfe9f4c67ac858fc9dc534612649c89aee502771e5c19c10575874cfc48ef6f18',
+  transactionHash: '0x88f96c02abd305e5395cfdc87515ba3a4f6139568a48ddeca66be286acf5be68',
+  logs: [],
+  blockNumber: 146759527,
+  confirmations: 2,
+  cumulativeGasUsed: BigNumber { _hex: '0x063f86', _isBigNumber: true },
+  effectiveGasPrice: BigNumber { _hex: '0x05d21dba00', _isBigNumber: true },
+  status: 1,
+  type: 0,
+  byzantium: true
+}
+```
+
+</CH.Code>
 
 
 </CH.Spotlight>
