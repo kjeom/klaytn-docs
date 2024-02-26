@@ -12,17 +12,19 @@ from eth_account import Account
 from web3py_ext.transaction.transaction import (
     empty_tx,
     fill_transaction,
-    TX_TYPE_VALUE_TRANSFER_MEMO
+    TxType
 )
 from web3py_ext.utils.klaytn_utils import to_pretty
 from cytoolz import merge
 
-w3 = Web3(Web3.HTTPProvider('https://public-en-baobab.klaytn.net'))
+w3 = Web3(Web3.HTTPProvider(
+    'https://public-en-baobab.klaytn.net'
+    ))
 
 def web3_value_transfer_with_memo_sign_recover():
     user = Account.from_key('0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8')
 
-    value_transfer_tx = empty_tx(TX_TYPE_VALUE_TRANSFER_MEMO)
+    value_transfer_tx = empty_tx(TxType.VALUE_TRANSFER_MEMO)
     value_transfer_tx = merge(value_transfer_tx, {
         'from' : user.address,
         'to' : user.address,
@@ -46,374 +48,242 @@ def web3_value_transfer_with_memo_sign_recover():
     print('tx hash: ', tx_hash, 'receipt: ', tx_receipt)
 
 web3_value_transfer_with_memo_sign_recover()
-
 ```
-
-
-
 
 ---
 ```zsh output
-❯ node functionName.js
-output
-```
-</CH.Code>
+❯ node ValueTransferWithMemo.py
+raw transaction of signed tx: 0x10f896820366850ba43b74008301042894a2a8854b1802d8cd5de631e690817c253d6a915388016345785d8a000094a2a8854b1802d8cd5de631e690817c253d6a91538c546573744d656d6f44617461f847f8458207f6a00daff49a09fbb8382654be6461d75e67def4d26442bf7bc8014da04d9d3b6f6da044fb682a3cd21e94e4dcf97cde1e0416d96dad2f15d353529a5db85873192c5b
 
-
-
-
-
-
----
-
-Import required modules.
-
-```py ValueTransferWithMemo.py focus=1:10
-
-```
----
-
-Create a Web3 instance connected to the BAOBAB testnet.
-```py ValueTransferWithMemo.py focus=12
-
-```
----
-Create an Account object for the user using the private key.
-
-```py ValueTransferWithMemo.py focus=15
-
-```
----
-Create a value transfer with memo transaction.
-
-```py ValueTransferWithMemo.py focus=17:24
-
-```
----
-
-Sign the Klaytn-specific transaction type with web3py.
-<CH.Code>
-```py ValueTransferWithMemo.py focus=27:28
-
-```
-
-
----
-
-```zsh output
-❯ py ValueTransferWithMemo.py
-raw transaction of signed tx: 0x10f89682030f850ba43b74008301042894a2a8854b1802d8cd5de631e690817c253d6a915388016345785d8a000094a2a8854b1802d8cd5de631e690817c253d6a91538c546573744d656d6f44617461f847f8458207f5a0ee13dfac1861821574f01db3619f01a7ca3cdd621a729c803386e8f25a1aaeafa048c3feaa6c6370076076dd3ac85a07da7e223fc519866f9e0586af253f3ad91c
-```
-
-</CH.Code>
-
----
- Recover the sender's address from the signed transaction.
-
-<CH.Code>
-```py ValueTransferWithMemo.py focus=30:31
-
-```
-
-
----
-
-```zsh output
-❯ py ValueTransferWithMemo.py
 recovered sender address 0xA2a8854b1802D8Cd5De631E690817c253d6a9153
-```
 
-</CH.Code>
-
----
-Decode the signed transaction and print the details.
-<CH.Code>
-
-```py ValueTransferWithMemo.py focus=33:34
-
-```
-
----
-
-```zsh output
-❯ py ValueTransferWithMemo.py
 decoded transaction: {
   "type": 16,
   "to": "0xA2a8854b1802D8Cd5De631E690817c253d6a9153",
   "value": 100000000000000000,
-  "nonce": 783,
+  "nonce": 870,
   "gasPrice": 50000000000,
   "gas": 66600,
   "from": "0xA2a8854b1802D8Cd5De631E690817c253d6a9153",
   "data": "0x546573744d656d6f44617461",
   "signatures": [
     {
-      "v": 2037,
-      "r": 107685571786161958302940487519505289439206816373712852973775131861350568603311,
-      "s": 32912817913804616887322699312467460596322786056700123178119807056124413925660
+      "v": 2038,
+      "r": 6190953446910446010339588924128856456849311270962439470585054122192743919469,
+      "s": 31201471237264490747209103173489052293037646153294155398956746212102253390939
     }
   ],
   "chainId": 1001
 }
+tx hash:  0x5b29f3dbc2f0d79dee4338a556eeb33c9d2dea9d0602882d44c307a2f25bce28 receipt:  AttributeDict({'blockHash': HexBytes('0x2ff2f47d724ccd645010adde8cebdb88edc4a31ffa415b34230f620544ecea6c'), 'blockNumber': 147340972, 'contractAddress': None, 'cumulativeGasUsed': 22200, 'effectiveGasPrice': 25000000000, 'from': '0xA2a8854b1802D8Cd5De631E690817c253d6a9153', 'gasUsed': 22200, 'logs': [], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'), 'status': 1, 'to': '0xA2a8854b1802D8Cd5De631E690817c253d6a9153', 'transactionHash': HexBytes('0x5b29f3dbc2f0d79dee4338a556eeb33c9d2dea9d0602882d44c307a2f25bce28'), 'transactionIndex': 0, 'type': 0})```
 ```
-
 </CH.Code>
 
 ---
-Send the raw transaction to the Klaytn network.
-
-```py ValueTransferWithMemo.py focus=36
-
-```
----
-Wait for the transaction receipt and print the hash and receipt.
-
-<CH.Code>
-```py ValueTransferWithMemo.py focus=37:39
+Import **extend** from **web3py_ext** to extend web3 to klaytn web3
+```py ValueTransferWithMemo.py focus=1,2
 
 ```
-
-
 
 ---
+Import necessary utils from **eth_account**, **web3py_ext** and cytoolz
+```py ValueTransferWithMemo.py focus=3:10
 
-```zsh output
-❯ py ValueTransferWithMemo.py
-tx hash:  0xe3d13f4f85ff9badb75b67ae9cd641c607bc6243ab49c5ab3f55ea09057ebe49 receipt:  {'blockHash': HexBytes('0x48e5a7854616b8a70420b9046d20ec410372eba77c9811e818d678d7a6b000d6'), 'blockNumber': 143821636, 'contractAddress': None, 'cumulativeGasUsed': 22200, 'effectiveGasPrice': 25000000000, 'from': '0xA2a8854b1802D8Cd5De631E690817c253d6a9153', 'gasUsed': 22200, 'logs': [], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'), 'status': 1, 'to': '0xA2a8854b1802D8Cd5De631E690817c253d6a9153', 'transactionHash': HexBytes('0xe3d13f4f85ff9badb75b67ae9cd641c607bc6243ab49c5ab3f55ea09057ebe49'), 'transactionIndex': 0, 'type': 0}
 ```
 
-</CH.Code>
+---
+Creating a **Web3 instance** with the specified Klaytn **Baobab** testnet URL
+```py ValueTransferWithMemo.py focus=12:14
 
+```
 
-</CH.Spotlight>
-
-# Fee Delegation
-
-<CH.Spotlight>
-<CH.Code>
-
-```py FeeDelegatedValueTransferMemo.py
+---
+Also, you can change the **provider** URL from **baobab** to **allthatnode**
+```python ValueTransferWithMemo.py focus=12:14
 from web3py_ext import extend
 from web3 import Web3
 from eth_account import Account
 from web3py_ext.transaction.transaction import (
     empty_tx,
     fill_transaction,
-    TX_TYPE_FEE_DELEGATED_VALUE_TRANSFER_MEMO
+    TxType
 )
 from web3py_ext.utils.klaytn_utils import to_pretty
 from cytoolz import merge
 
-w3 = Web3(Web3.HTTPProvider('https://public-en-baobab.klaytn.net'))
+w3 = Web3(Web3.HTTPProvider(
+    'https://klaytn-mainnet-rpc.allthatnode.com:8551'
+    ))
 
-def web3_fee_delegated_value_transfer_with_memo_sign_recover():
+def web3_value_transfer_with_memo_sign_recover():
     user = Account.from_key('0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8')
-    fee_delegator = Account.from_key('0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4')
 
-    fee_delegated_value_transfer_tx = empty_tx(TX_TYPE_FEE_DELEGATED_VALUE_TRANSFER_MEMO)
-    fee_delegated_value_transfer_tx = merge(fee_delegated_value_transfer_tx, {
+    value_transfer_tx = empty_tx(TxType.VALUE_TRANSFER_MEMO)
+    value_transfer_tx = merge(value_transfer_tx, {
         'from' : user.address,
         'to' : user.address,
         'value' : Web3.to_peb(0.1, 'klay'),
-        'data' : 'memo'.encode(encoding='utf-8').hex(),
+        'data' : b'TestMemoData'
     })
-    fee_delegated_value_transfer_tx = fill_transaction(fee_delegated_value_transfer_tx, w3)
+    value_transfer_tx = fill_transaction(value_transfer_tx, w3)
 
     # sign the klaytn specific transaction type with web3py
-    signed_tx = Account.sign_transaction(fee_delegated_value_transfer_tx, user.key)
+    signed_tx = Account.sign_transaction(value_transfer_tx, user.key)
     print("\nraw transaction of signed tx:", signed_tx.rawTransaction.hex())
- 
+
     recovered_tx = Account.recover_transaction(signed_tx.rawTransaction)
     print("\nrecovered sender address", recovered_tx)
 
-    feepayer_signed_tx = Account.sign_transaction_as_feepayer(signed_tx.rawTransaction, fee_delegator.address, fee_delegator.key)
-    print("\nraw transaction of signed tx:", feepayer_signed_tx.rawTransaction.hex())
-
-    feepayer_recovered_tx = Account.recover_transaction_as_feepayer(feepayer_signed_tx.rawTransaction)
-    print("recovered feepayer address:", feepayer_recovered_tx)
-
-    decoded_tx = Account.decode_transaction(feepayer_signed_tx.rawTransaction)
+    decoded_tx = Account.decode_transaction(signed_tx.rawTransaction)
     print("\ndecoded transaction:", to_pretty(decoded_tx))
 
-    tx_hash = w3.eth.send_raw_transaction(feepayer_signed_tx.rawTransaction)
+    tx_hash = w3.eth.send_raw_transaction(signed_tx.rawTransaction)
     tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
     print('tx hash: ', tx_hash, 'receipt: ', tx_receipt)
 
-web3_fee_delegated_value_transfer_with_memo_sign_recover()
+web3_value_transfer_with_memo_sign_recover()
+```
+
+---
+**Load** an account from private key
+```python ValueTransferWithMemo.py focus=17
 
 ```
 
+---
+**Create** an empty transaction of type **TxType.VALUE_TRANSFER_MEMO**. You can use **empty_tx** util to get a tx with default fields filled.
+```py ValueTransferWithMemo.py focus=4,5,8,19
 
-
+```
 
 ---
+**Merge** the **additional fields** like **from**, **to** and **value** into the empty tx by using the **merge** util.
+```py ValueTransferWithMemo.py focus=10,20:24
+
+```
+
+---
+You can use the **Web3.to_peb** util to convert decimal
+```py ValueTransferWithMemo.py focus=23
+
+```
+
+---
+Especially **write down** what you want to record in the **data** field in a binary format
+```py ValueTransferWithMemo.py focus=24
+
+```
+
+---
+The **fill_transaction** method will auto-complete some fields like nonce, gas, …
+```python ValueTransferWithMemo.py focus=4,6,8,26
+
+```
+
+---
+**Sign** the value transfer tx by user's private key
+<CH.Code>
+```python ValueTransferWithMemo.py focus=28:30
+
+```
+---
 ```zsh output
-❯ python FeeDelegatedValueTransferMemo.py
-output
+raw transaction of signed tx: 0x10f896820366850ba43b74008301042894a2a8854b1802d8cd5de631e690817c253d6a915388016345785d8a000094a2a8854b1802d8cd5de631e690817c253d6a91538c546573744d656d6f44617461f847f8458207f6a00daff49a09fbb8382654be6461d75e67def4d26442bf7bc8014da04d9d3b6f6da044fb682a3cd21e94e4dcf97cde1e0416d96dad2f15d353529a5db85873192c5b
 ```
 </CH.Code>
 
-
-
-
-
-
 ---
-
-Install required package
-```py FeeDelegatedValueTransferMemo.py focus=1:10
-
-```
----
-Create a Web3 instance connected to the BAOBAB testnet.
-
-```py FeeDelegatedValueTransferMemo.py focus=12
-
-```
----
-
-Create Account objects for the user and fee delegator using their private keys.
-```py FeeDelegatedValueTransferMemo.py focus=15:16
-
-```
----
-Create an empty fee-delegated value transfer with memo transaction.
-
-```py FeeDelegatedValueTransferMemo.py focus=18:25
-
-```
----
-Sign the Klaytn-specific transaction type with web3py.
-
+**Recover** the **signer's address** from the signature in signed tx
 <CH.Code>
-```py FeeDelegatedValueTransferMemo.py focus=27:29
+```python ValueTransferWithMemo.py focus=32:33
 
 ```
-
-
 ---
-
 ```zsh output
-❯ py FeeDelegatedValueTransferMemo.py
-raw transaction of signed tx: 0x11f88d820310850ba43b740082fac894a2a8854b1802d8cd5de631e690817c253d6a915388016345785d8a000094a2a8854b1802d8cd5de631e690817c253d6a9153846d656d6ff847f8458207f5a0b059d2c393945c2eb1f84cf26a9de80296f0c6bf69636136216f349385666008a057865f61bdd164732e3c1496f5297a25fa209b7001f7a909b1b75ccd9a674166
-```
-
-</CH.Code>
----
-Recover the sender's address from the signed transaction.
-<CH.Code>
-
-```py FeeDelegatedValueTransferMemo.py focus=31:32
-
-```
-
-
----
-
-```zsh output
-❯ py FeeDelegatedValueTransferMemo.py
 recovered sender address 0xA2a8854b1802D8Cd5De631E690817c253d6a9153
 ```
-
 </CH.Code>
+
 ---
-Sign the transaction as the fee payer.
+You can **decode** the RLP-encoded tx by the **Account.decode_transaction** util and if you want to make the output format pretty, use the **to_pretty** util
 <CH.Code>
-
-```py FeeDelegatedValueTransferMemo.py focus=34:35
+```python ValueTransferWithMemo.py focus=35:36
 
 ```
-
-
 ---
-
 ```zsh output
-❯ py FeeDelegatedValueTransferMemo.py
-raw transaction of signed tx: 0x11f8eb820310850ba43b740082fac894a2a8854b1802d8cd5de631e690817c253d6a915388016345785d8a000094a2a8854b1802d8cd5de631e690817c253d6a9153846d656d6ff847f8458207f5a0b059d2c393945c2eb1f84cf26a9de80296f0c6bf69636136216f349385666008a057865f61bdd164732e3c1496f5297a25fa209b7001f7a909b1b75ccd9a67416694cb0eb737dfda52756495a5e08a9b37aab3b271daf847f8458207f6a09190406b5f98d7360987359321657e4f60b0a08f6bc738b5cb8cd3090e137874a039a1b50fa0ce862fc0d7a02b31d177d5e5285770f85217c3446dc92887966211
-```
-
-</CH.Code>
----
-Recover the fee payer's address from the signed transaction.
-
-<CH.Code>
-```py FeeDelegatedValueTransferMemo.py focus=37:38
-
-```
-
-
----
-
-```zsh output
-❯ py FeeDelegatedValueTransferMemo.py
-recovered feepayer address: ['0xCb0eb737dfda52756495A5e08A9b37AAB3b271dA']
-```
-
-</CH.Code>
----
-Decode the signed transaction and print the details.
-<CH.Code>
-```py FeeDelegatedValueTransferMemo.py focus=40:41
-
-```
-
-
-
-
----
-
-```zsh output
-❯ py FeeDelegatedValueTransferMemo.py
 decoded transaction: {
-  "type": 17,
+  "type": 16,
   "to": "0xA2a8854b1802D8Cd5De631E690817c253d6a9153",
   "value": 100000000000000000,
-  "nonce": 784,
+  "nonce": 870,
   "gasPrice": 50000000000,
-  "gas": 64200,
+  "gas": 66600,
   "from": "0xA2a8854b1802D8Cd5De631E690817c253d6a9153",
-  "data": "0x6d656d6f",
-  "feePayer": "0xCb0eb737dfda52756495A5e08A9b37AAB3b271dA",
+  "data": "0x546573744d656d6f44617461",
   "signatures": [
     {
-      "v": 2037,
-      "r": 79765765378884525347117439494767970585353848507962619395042292641319159750664,
-      "s": 39588633634432413261097368236126956160135867590506495223010744602888371650918
-    }
-  ],
-  "feePayerSignatures": [
-    {
       "v": 2038,
-      "r": 65840233628449744351360629714820379842433770838641528262235209779182489008244,
-      "s": 26067544384098398894768894026591802452482694222720676372843625675853439328785
+      "r": 6190953446910446010339588924128856456849311270962439470585054122192743919469,
+      "s": 31201471237264490747209103173489052293037646153294155398956746212102253390939
     }
   ],
   "chainId": 1001
 }
 ```
-
 </CH.Code>
----
-Send the raw transaction to the Klaytn network.
 
-```py FeeDelegatedValueTransferMemo.py focus=43
+---
+**Send** the tx to the blockchain. It will return the tx hash, which will be used to wait the receipt
+```python ValueTransferWithMemo.py focus=38
 
 ```
----
 
-Wait for the transaction receipt and print the hash and receipt.
+---
+The **wait_for_transaction_receipt** method returns the tx receipt if it is completed in the blockchain
 <CH.Code>
-```py FeeDelegatedValueTransferMemo.py focus=44:45
+```python ValueTransferWithMemo.py focus=39:40
 
 ```
-
+---
+```zsh output
+tx hash:  0x5b29f3dbc2f0d79dee4338a556eeb33c9d2dea9d0602882d44c307a2f25bce28 receipt:  AttributeDict({'blockHash': HexBytes('0x2ff2f47d724ccd645010adde8cebdb88edc4a31ffa415b34230f620544ecea6c'), 'blockNumber': 147340972, 'contractAddress': None, 'cumulativeGasUsed': 22200, 'effectiveGasPrice': 25000000000, 'from': '0xA2a8854b1802D8Cd5De631E690817c253d6a9153', 'gasUsed': 22200, 'logs': [], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'), 'status': 1, 'to': '0xA2a8854b1802D8Cd5De631E690817c253d6a9153', 'transactionHash': HexBytes('0x5b29f3dbc2f0d79dee4338a556eeb33c9d2dea9d0602882d44c307a2f25bce28'), 'transactionIndex': 0, 'type': 0})```
+```
+</CH.Code>
 
 ---
+Finally, get the result.
+<CH.Code>
+```python ValueTransferWithMemo.py focus=42
 
-```zsh output
-❯ py FeeDelegatedValueTransferMemo.py
-tx hash:  0x9b0b3d455bc46986d059bd1b665732555d9a1e79ddd8caaeadf3a2dd50fa983c receipt:  {'blockHash': HexBytes('0x1335ff39b1a56a5e9338305a92b49e15aa487b39bc80e500906e1c5cf5d5f66a'), 'blockNumber': 143821917, 'contractAddress': None, 'cumulativeGasUsed': 213437, 'effectiveGasPrice': 25000000000, 'from': '0xA2a8854b1802D8Cd5De631E690817c253d6a9153', 'gasUsed': 31400, 'logs': [], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'), 'status': 1, 'to': '0xA2a8854b1802D8Cd5De631E690817c253d6a9153', 'transactionHash': HexBytes('0x9b0b3d455bc46986d059bd1b665732555d9a1e79ddd8caaeadf3a2dd50fa983c'), 'transactionIndex': 1, 'type': 0}
 ```
+---
+```zsh output
+❯ node ValueTransferWithMemo.py
+raw transaction of signed tx: 0x10f896820366850ba43b74008301042894a2a8854b1802d8cd5de631e690817c253d6a915388016345785d8a000094a2a8854b1802d8cd5de631e690817c253d6a91538c546573744d656d6f44617461f847f8458207f6a00daff49a09fbb8382654be6461d75e67def4d26442bf7bc8014da04d9d3b6f6da044fb682a3cd21e94e4dcf97cde1e0416d96dad2f15d353529a5db85873192c5b
 
+recovered sender address 0xA2a8854b1802D8Cd5De631E690817c253d6a9153
+
+decoded transaction: {
+  "type": 16,
+  "to": "0xA2a8854b1802D8Cd5De631E690817c253d6a9153",
+  "value": 100000000000000000,
+  "nonce": 870,
+  "gasPrice": 50000000000,
+  "gas": 66600,
+  "from": "0xA2a8854b1802D8Cd5De631E690817c253d6a9153",
+  "data": "0x546573744d656d6f44617461",
+  "signatures": [
+    {
+      "v": 2038,
+      "r": 6190953446910446010339588924128856456849311270962439470585054122192743919469,
+      "s": 31201471237264490747209103173489052293037646153294155398956746212102253390939
+    }
+  ],
+  "chainId": 1001
+}
+tx hash:  0x5b29f3dbc2f0d79dee4338a556eeb33c9d2dea9d0602882d44c307a2f25bce28 receipt:  AttributeDict({'blockHash': HexBytes('0x2ff2f47d724ccd645010adde8cebdb88edc4a31ffa415b34230f620544ecea6c'), 'blockNumber': 147340972, 'contractAddress': None, 'cumulativeGasUsed': 22200, 'effectiveGasPrice': 25000000000, 'from': '0xA2a8854b1802D8Cd5De631E690817c253d6a9153', 'gasUsed': 22200, 'logs': [], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'), 'status': 1, 'to': '0xA2a8854b1802D8Cd5De631E690817c253d6a9153', 'transactionHash': HexBytes('0x5b29f3dbc2f0d79dee4338a556eeb33c9d2dea9d0602882d44c307a2f25bce28'), 'transactionIndex': 0, 'type': 0})``````
+```
 </CH.Code>
+
 </CH.Spotlight>

@@ -1,0 +1,102 @@
+# Public Account Key
+
+**AccountKeyPublic** is used for accounts having one public key. If an account has an AccountKeyPublic object, the transaction validation process is done like below:
+
+<CH.Spotlight>
+<CH.Code>
+
+```py pubkey_rlp_encode_decode.py
+from web3py_ext import extend
+from web3 import Web3
+from eth_account import Account
+from web3py_ext.klaytn_account.utils import compressed_key
+from web3py_ext.utils.klaytn_utils import to_pretty
+from web3py_ext.klaytn_account import account_key
+
+def pubkey_rlp_encode_decode():
+    user1 = Account.from_key('0x8234bdf5e900c9e43401399ae3836340f31dcff52843baf8432f06cca9e3f396')
+    pubkey = {
+        'type': 2,
+        'key' : compressed_key(user1)
+    }
+    encoded_pubkey_account_key = account_key.AccountKey.serialize(pubkey)
+    print(encoded_pubkey_account_key.hex())
+    decoded_pubkey_account_key = account_key.AccountKey.deserialize(encoded_pubkey_account_key)
+    print(to_pretty(decoded_pubkey_account_key))
+
+pubkey_rlp_encode_decode()
+```
+
+---
+```zsh output
+❯ py pubkey_rlp_encode_decode.py
+02a1039b32426a3eaddb3ced5df63b596c8edceaa912846c4604017382d6646f0fd72e
+{
+  "type": 2,
+  "key": "0x039b32426a3eaddb3ced5df63b596c8edceaa912846c4604017382d6646f0fd72e"
+}
+```
+</CH.Code>
+
+---
+Import **extend** from **web3py_ext** to extend web3 to klaytn web3
+```py pubkey_rlp_encode_decode.py focus=1
+
+```
+---
+Import necessary utils from **web3** and **web3py_ext**
+```py pubkey_rlp_encode_decode.py focus=2:6
+
+```
+---
+Generate an **EOA account** from a private key
+```py pubkey_rlp_encode_decode.py focus=9
+
+```
+---
+Define a **public account key**
+```py pubkey_rlp_encode_decode.py focus=10:13
+
+```
+---
+**Key type 2**: public account key type
+```py pubkey_rlp_encode_decode.py focus=11
+
+```
+---
+And, has **key** field including **the public key** in a compressed format. You can use the **compressed_key** util from web3py-ext to extract the public key from the private key
+```py pubkey_rlp_encode_decode.py focus=4,12
+
+```
+---
+**Serialize** the public account key to RLP-encoded format
+<CH.Code>
+```py pubkey_rlp_encode_decode.py focus=6,14:15
+
+```
+---
+
+```zsh output
+02a1039b32426a3eaddb3ced5df63b596c8edceaa912846c4604017382d6646f0fd72e
+```
+
+</CH.Code>
+
+---
+**Deserialize** the RLP-encoded public key-based account key back into its original form, use **to_pretty** utils to get better formatted result
+<CH.Code>
+```py pubkey_rlp_encode_decode.py focus=5,16:17
+
+```
+
+---
+
+```zsh output
+{
+  "type": 2,
+  "key": "0x039b32426a3eaddb3ced5df63b596c8edceaa912846c4604017382d6646f0fd72e"
+}
+```
+</CH.Code>
+
+</CH.Spotlight>
