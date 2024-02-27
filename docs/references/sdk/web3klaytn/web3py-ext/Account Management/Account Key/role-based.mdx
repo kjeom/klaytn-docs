@@ -1,0 +1,208 @@
+# Role-based Account Key
+
+**AccountKeyRoleBased** represents a role-based key. If an account has an **AccountKeyRoleBased** object and the transaction type is one **except account update**, the validation process is done according to each roles like below:
+
+<CH.Spotlight>
+<CH.Code>
+
+```py role_based_rlp_encode_decode.py
+from web3py_ext import extend
+from web3py_ext.utils.klaytn_utils import to_pretty
+from web3py_ext.klaytn_account import account_key
+
+def role_based_rlp_encode_decode():
+    role_based_account_key = {
+        "type": 5,
+        "keys": {
+            "roleTransactionKey": {
+                "type": 4,
+                "threshold": 1,
+                "keys": [
+                    {
+                        "weight": 1,
+                        "key": "0x0375f19db17ee6d150e34f4b67329beb9665b2ff2d6202fec8d3b8f5f08e824429"
+                    },
+                ]
+            },
+            "roleAccountUpdateKey": {
+                "type": 4,
+                "threshold": 1,
+                "keys": [
+                    {
+                        "weight": 1,
+                        "key": "0x03de9329ba44a8529415c8f9a103194c9bda193d53ddd9173fa46d320fb226c361"
+                    },
+                ]
+            },
+            "roleFeePayerKey": {
+                "type": 4,
+                "threshold": 1,
+                "keys": [
+                    {
+                        "weight": 1,
+                        "key": "0x039c8ba54b69161ec54d1005eab16b60259eb5b9647674f7b215f8f336604e0c3c"
+                    },
+                ]
+            }
+        }
+    }
+
+    encoded_role_based_account_key = account_key.AccountKey.serialize(role_based_account_key)
+    print(encoded_role_based_account_key.hex())
+    decoded_role_based_account_key = account_key.AccountKey.deserialize(encoded_role_based_account_key)
+    print(to_pretty(decoded_role_based_account_key))
+
+role_based_rlp_encode_decode()
+```
+---
+```zsh output
+❯ py role_based_rlp_encode_decode.py
+05f87ba804e601e4e301a10375f19db17ee6d150e34f4b67329beb9665b2ff2d6202fec8d3b8f5f08e824429a804e601e4e301a103de9329ba44a8529415c8f9a103194c9bda193d53ddd9173fa46d320fb226c361a804e601e4e301a1039c8ba54b69161ec54d1005eab16b60259eb5b9647674f7b215f8f336604e0c3c
+{
+  "type": 5,
+  "keys": {
+    "roleTransactionKey": {
+      "type": 4,
+      "threshold": 1,
+      "keys": [
+        {
+          "weight": 1,
+          "key": "0x0375f19db17ee6d150e34f4b67329beb9665b2ff2d6202fec8d3b8f5f08e824429"
+        }
+      ]
+    },
+    "roleAccountUpdateKey": {
+      "type": 4,
+      "threshold": 1,
+      "keys": [
+        {
+          "weight": 1,
+          "key": "0x03de9329ba44a8529415c8f9a103194c9bda193d53ddd9173fa46d320fb226c361"
+        }
+      ]
+    },
+    "roleFeePayerKey": {
+      "type": 4,
+      "threshold": 1,
+      "keys": [
+        {
+          "weight": 1,
+          "key": "0x039c8ba54b69161ec54d1005eab16b60259eb5b9647674f7b215f8f336604e0c3c"
+        }
+      ]
+    }
+  }
+}
+```
+</CH.Code>
+
+
+---
+Import **extend** from **web3py_ext** to extend web3 to klaytn web3
+```py role_based_rlp_encode_decode.py focus=1
+
+```
+---
+Import necessary utils from **web3py_ext**
+```py role_based_rlp_encode_decode.py focus=2:3
+
+```
+---
+Define a **role-based account key**
+
+```py role_based_rlp_encode_decode.py focus=6:40
+
+```
+---
+**Key type 5**: role-based account key type
+```py role_based_rlp_encode_decode.py focus=7
+
+```
+---
+This is the role-based key structure that has **roleTransactionKey**, **roleAccountUpdateKey** and **roleFeePayerKey**
+```py role_based_rlp_encode_decode.py focus=8:39
+
+```
+---
+In this case, the **keys** for each role consist of **multisig key** that has only **1 threshold** and **1 key**
+```py role_based_rlp_encode_decode.py focus=9:39
+
+```
+---
+**Key types** for each role is 4 that means **multisig key**
+```py role_based_rlp_encode_decode.py focus=10,20,30
+
+```
+---
+**Threshold** for each role is 1 because there is only 1 weighted key in each role key
+```py role_based_rlp_encode_decode.py focus=11,21,31
+
+```
+---
+above mentioned, the **keys** field for each multisig key has only 1 weighted key
+```py role_based_rlp_encode_decode.py focus=12:17,22:27,32:37
+
+```
+---
+**Serialize** the role-based account key to RLP-encoded format
+<CH.Code>
+```py role_based_rlp_encode_decode.py focus=3,42:43
+
+```
+
+---
+
+```zsh output
+05f87ba804e601e4e301a10375f19db17ee6d150e34f4b67329beb9665b2ff2d6202fec8d3b8f5f08e824429a804e601e4e301a103de9329ba44a8529415c8f9a103194c9bda193d53ddd9173fa46d320fb226c361a804e601e4e301a1039c8ba54b69161ec54d1005eab16b60259eb5b9647674f7b215f8f336604e0c3c
+```
+</CH.Code>
+
+
+---
+**Deserialize** the RLP-encoded role-based account key back into its original form, use **to_pretty** utils to get better formatted result
+<CH.Code>
+```py role_based_rlp_encode_decode.py focus=44:45
+
+```
+
+---
+
+```zsh output
+{
+  "type": 5,
+  "keys": {
+    "roleTransactionKey": {
+      "type": 4,
+      "threshold": 1,
+      "keys": [
+        {
+          "weight": 1,
+          "key": "0x0375f19db17ee6d150e34f4b67329beb9665b2ff2d6202fec8d3b8f5f08e824429"
+        }
+      ]
+    },
+    "roleAccountUpdateKey": {
+      "type": 4,
+      "threshold": 1,
+      "keys": [
+        {
+          "weight": 1,
+          "key": "0x03de9329ba44a8529415c8f9a103194c9bda193d53ddd9173fa46d320fb226c361"
+        }
+      ]
+    },
+    "roleFeePayerKey": {
+      "type": 4,
+      "threshold": 1,
+      "keys": [
+        {
+          "weight": 1,
+          "key": "0x039c8ba54b69161ec54d1005eab16b60259eb5b9647674f7b215f8f336604e0c3c"
+        }
+      ]
+    }
+  }
+}
+```
+</CH.Code>
+</CH.Spotlight>

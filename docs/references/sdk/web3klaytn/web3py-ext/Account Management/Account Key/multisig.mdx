@@ -1,0 +1,160 @@
+# Multisig Account Key
+
+**AccountKeyWeightedMultiSig** is an account key type containing a threshold and WeightedPublicKeys which contains a list consisting of a public key and its weight.
+
+In order for a transaction to be valid for an account associated with **AccountKeyWeightedMultiSig**, the following conditions should be satisfied:
+    * The weighted sum of the signed public keys should be larger than the threshold.
+    * The invalid signature should not be included in the transaction.
+    * The number of signed public keys should be less than the number of weightedPublicKeys.
+
+<CH.Spotlight>
+<CH.Code>
+
+```py multisig_rlp_encode_decode.py
+from web3py_ext import extend
+from web3 import Web3
+from web3py_ext.utils.klaytn_utils import to_pretty
+from web3py_ext.klaytn_account import account_key
+
+def multisig_rlp_encode_decode():
+    multisig_key = {
+        'type': 4,
+        'threshold': 2,
+        'keys': [
+            {
+                'weight':1,
+                'key': '0x031bbf1d8d04d4dd7fd2bdba4c006247be50ed48e9c53ff7b4891b7e5e1bcc85c6',
+            },
+            {
+                'weight':1,
+                'key': '0x039bc04ad051a4f0d57d0f0c8a3079e5b12dd1849d1052f8526b2c73e9e518eee6',
+            },
+            {
+                'weight':1,
+                'key': '0x029c329fc5db2714c1a49fec3e7e46ecd9705fe57bd6a110377f252788610db7e1',
+            },
+        ]
+    }
+    encoded_multisig_account_key = account_key.AccountKey.serialize(multisig_key)
+    print(encoded_multisig_account_key.hex())
+    decoded_multisig_account_key = account_key.AccountKey.deserialize(encoded_multisig_account_key)
+    print(to_pretty(decoded_multisig_account_key))
+
+multisig_rlp_encode_decode()
+```
+
+---
+```zsh output
+❯ py multisig_rlp_encode_decode.py
+04f86f02f86ce301a1031bbf1d8d04d4dd7fd2bdba4c006247be50ed48e9c53ff7b4891b7e5e1bcc85c6e301a1039bc04ad051a4f0d57d0f0c8a3079e5b12dd1849d1052f8526b2c73e9e518eee6e301a1029c329fc5db2714c1a49fec3e7e46ecd9705fe57bd6a110377f252788610db7e1
+{
+  "type": 4,
+  "threshold": 2,
+  "keys": [
+    {
+      "weight": 1,
+      "key": "0x031bbf1d8d04d4dd7fd2bdba4c006247be50ed48e9c53ff7b4891b7e5e1bcc85c6"
+    },
+    {
+      "weight": 1,
+      "key": "0x039bc04ad051a4f0d57d0f0c8a3079e5b12dd1849d1052f8526b2c73e9e518eee6"
+    },
+    {
+      "weight": 1,
+      "key": "0x029c329fc5db2714c1a49fec3e7e46ecd9705fe57bd6a110377f252788610db7e1"
+    }
+  ]
+}
+```
+</CH.Code>
+
+---
+Import **extend** from **web3py_ext** to extend web3 to klaytn web3
+```py multisig_rlp_encode_decode.py focus=1
+
+```
+---
+Import necessary utils from **web3** and **web3py_ext**
+```py multisig_rlp_encode_decode.py focus=2:4
+
+```
+---
+Define a **multisig account key**
+```py multisig_rlp_encode_decode.py focus=7:24
+
+```
+---
+**Key type 4**: Multisig account key type
+```py multisig_rlp_encode_decode.py focus=8
+
+```
+---
+**Threshold 2**: At least, the summation of the **weight** should be **more than 2** to execute a transaction
+```py multisig_rlp_encode_decode.py focus=9
+
+```
+---
+This is the multisig key structure that has **3 keys**
+```py multisig_rlp_encode_decode.py focus=10:23
+
+```
+---
+In this case, each key has same **weight 1**
+```py multisig_rlp_encode_decode.py focus=12,16,20
+
+```
+---
+And, has **key** field including **the public key** in a compressed format
+```py multisig_rlp_encode_decode.py focus=13,17,21
+
+```
+---
+**Serialize** the multisig account key to **RLP-encoded format** by using the web3py-ext util
+<CH.Code>
+```py multisig_rlp_encode_decode.py focus=4,25:26
+
+```
+
+---
+
+```zsh output
+04f86f02f86ce301a1031bbf1d8d04d4dd7fd2bdba4c006247be50ed48e9c53ff7b4891b7e5e1bcc85c6e301a1039bc04ad051a4f0d57d0f0c8a3079e5b12dd1849d1052f8526b2c73e9e518eee6e301a1029c329fc5db2714c1a49fec3e7e46ecd9705fe57bd6a110377f252788610db7e1
+```
+
+</CH.Code>
+
+
+---
+**Deserialize** the RLP-encoded multisig account key back into its original form, use **to_pretty** utils to get better formatted result
+<CH.Code>
+```py multisig_rlp_encode_decode.py focus=3,27:28
+
+```
+
+---
+
+```zsh output
+❯ python txTypeLegacyTransaction.py
+{
+  "type": 4,
+  "threshold": 2,
+  "keys": [
+    {
+      "weight": 1,
+      "key": "0x031bbf1d8d04d4dd7fd2bdba4c006247be50ed48e9c53ff7b4891b7e5e1bcc85c6"
+    },
+    {
+      "weight": 1,
+      "key": "0x039bc04ad051a4f0d57d0f0c8a3079e5b12dd1849d1052f8526b2c73e9e518eee6"
+    },
+    {
+      "weight": 1,
+      "key": "0x029c329fc5db2714c1a49fec3e7e46ecd9705fe57bd6a110377f252788610db7e1"
+    }
+  ]
+}
+```
+
+</CH.Code>
+
+</CH.Spotlight>
