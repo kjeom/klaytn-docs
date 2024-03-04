@@ -1,0 +1,319 @@
+# Account Update
+
+
+# Fee Delegation
+
+
+<CH.Spotlight>
+<CH.Code>
+
+```java FeeDelegatedAccountUpdateExample.java
+package org.web3j.example;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import org.web3j.crypto.KlayCredentials;
+import org.web3j.crypto.KlayRawTransaction;
+import org.web3j.crypto.KlayTransactionEncoder;
+import org.web3j.crypto.transaction.account.AccountKeyPublic;
+import org.web3j.crypto.transaction.type.TxType;
+import org.web3j.crypto.transaction.type.TxTypeFeeDelegatedAccountUpdate;
+import org.web3j.crypto.transaction.type.TxType.Type;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthChainId;
+import org.web3j.protocol.core.methods.response.EthSendTransaction;
+import org.web3j.protocol.http.HttpService;
+import org.web3j.protocol.klaytn.Web3j;
+import org.web3j.utils.Numeric;
+import org.web3j.protocol.klaytn.core.method.response.TransactionReceipt;
+
+/**
+ * 
+ */
+public class FeeDelegatedAccountUpdateExample implements keySample {
+
+        public static void run(KlayCredentials credentials) throws IOException {
+
+                Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
+                KlayCredentials new_credentials = KlayCredentials.create(PUBLIC_KEY_privkey, PUBLIC_KEY_address);
+                KlayCredentials credentials_feepayer = KlayCredentials.create(keySample.LEGACY_KEY_FEEPAYER_privkey);
+                BigInteger GAS_PRICE = BigInteger.valueOf(50000000000L);
+                BigInteger GAS_LIMIT = BigInteger.valueOf(6721950);
+                String from = credentials.getAddress();
+                EthChainId EthchainId = web3j.ethChainId().send();
+                long chainId = EthchainId.getChainId().longValue();
+                BigInteger nonce = web3j.ethGetTransactionCount(from, DefaultBlockParameterName.LATEST).send()
+                                .getTransactionCount();
+
+                BigInteger newPubkey = new_credentials.getEcKeyPair().getPublicKey();
+
+                AccountKeyPublic accountkey = AccountKeyPublic.create(newPubkey);
+
+                TxType.Type type = Type.FEE_DELEGATED_ACCOUNT_UPDATE;
+
+                KlayRawTransaction raw = KlayRawTransaction.createTransaction(
+                                type,
+                                nonce,
+                                GAS_PRICE,
+                                GAS_LIMIT,
+                                from,
+                                accountkey);
+
+                // Sign as sender
+                byte[] signedMessage = KlayTransactionEncoder.signMessage(raw, chainId, credentials);
+
+                // Sign same message as Fee payer
+                signedMessage = KlayTransactionEncoder.signMessageAsFeePayer(raw, chainId, credentials_feepayer);
+
+                String hexValue = Numeric.toHexString(signedMessage);
+                EthSendTransaction transactionResponse = web3j.ethSendRawTransaction(hexValue).send();
+                System.out.println("TxHash : \n " + transactionResponse.getResult());
+                String txHash = transactionResponse.getResult();
+                try {
+                        Thread.sleep(2000);
+                } catch (Exception e) {
+                        System.out.println(e);
+                }
+                TransactionReceipt receipt = web3j.klayGetTransactionReceipt(txHash).send().getResult();
+                System.out.println("receipt : \n" + receipt);
+                web3j.shutdown();
+
+                TxTypeFeeDelegatedAccountUpdate rawTransaction = TxTypeFeeDelegatedAccountUpdate
+                                .decodeFromRawTransaction(signedMessage);
+
+                System.out.println("TxType : " + rawTransaction.getKlayType());
+        }
+
+}
+
+
+```
+
+
+
+
+---
+```zsh output
+❯ java FeeDelegatedAccountUpdateExample.java
+output
+```
+</CH.Code>
+
+
+
+
+
+
+---
+Importing necessary classes from the Web3j library for Klaytn
+
+
+
+```java FeeDelegatedAccountUpdateExample.java focus=1:18
+
+```
+
+
+---
+Create a Web3j instance with the specified BAOBAB_URL
+
+
+
+```java FeeDelegatedAccountUpdateExample.java focus=27
+
+```
+
+---
+
+Also, you can change the default provider. For example, using the alchemy provider.
+
+```java FeeDelegatedAccountUpdateExample.java focus=27
+package org.web3j.example;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import org.web3j.crypto.KlayCredentials;
+import org.web3j.crypto.KlayRawTransaction;
+import org.web3j.crypto.KlayTransactionEncoder;
+import org.web3j.crypto.transaction.account.AccountKeyPublic;
+import org.web3j.crypto.transaction.type.TxType;
+import org.web3j.crypto.transaction.type.TxTypeFeeDelegatedAccountUpdate;
+import org.web3j.crypto.transaction.type.TxType.Type;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthChainId;
+import org.web3j.protocol.core.methods.response.EthSendTransaction;
+import org.web3j.protocol.http.HttpService;
+import org.web3j.protocol.klaytn.Web3j;
+import org.web3j.utils.Numeric;
+import org.web3j.protocol.klaytn.core.method.response.TransactionReceipt;
+
+/**
+ * 
+ */
+public class FeeDelegatedAccountUpdateExample implements keySample {
+
+        public static void run(KlayCredentials credentials) throws IOException {
+
+                Web3j web3j = Web3j.build(new HttpService("https://klaytn-mainnet-rpc.allthatnode.com:8551"));
+                KlayCredentials new_credentials = KlayCredentials.create(PUBLIC_KEY_privkey, PUBLIC_KEY_address);
+                KlayCredentials credentials_feepayer = KlayCredentials.create(keySample.LEGACY_KEY_FEEPAYER_privkey);
+                BigInteger GAS_PRICE = BigInteger.valueOf(50000000000L);
+                BigInteger GAS_LIMIT = BigInteger.valueOf(6721950);
+                String from = credentials.getAddress();
+                EthChainId EthchainId = web3j.ethChainId().send();
+                long chainId = EthchainId.getChainId().longValue();
+                BigInteger nonce = web3j.ethGetTransactionCount(from, DefaultBlockParameterName.LATEST).send()
+                                .getTransactionCount();
+
+                BigInteger newPubkey = new_credentials.getEcKeyPair().getPublicKey();
+
+                AccountKeyPublic accountkey = AccountKeyPublic.create(newPubkey);
+
+                TxType.Type type = Type.FEE_DELEGATED_ACCOUNT_UPDATE;
+
+                KlayRawTransaction raw = KlayRawTransaction.createTransaction(
+                                type,
+                                nonce,
+                                GAS_PRICE,
+                                GAS_LIMIT,
+                                from,
+                                accountkey);
+
+                // Sign as sender
+                byte[] signedMessage = KlayTransactionEncoder.signMessage(raw, chainId, credentials);
+
+                // Sign same message as Fee payer
+                signedMessage = KlayTransactionEncoder.signMessageAsFeePayer(raw, chainId, credentials_feepayer);
+
+                String hexValue = Numeric.toHexString(signedMessage);
+                EthSendTransaction transactionResponse = web3j.ethSendRawTransaction(hexValue).send();
+                System.out.println("TxHash : \n " + transactionResponse.getResult());
+                String txHash = transactionResponse.getResult();
+                try {
+                        Thread.sleep(2000);
+                } catch (Exception e) {
+                        System.out.println(e);
+                }
+                TransactionReceipt receipt = web3j.klayGetTransactionReceipt(txHash).send().getResult();
+                System.out.println("receipt : \n" + receipt);
+                web3j.shutdown();
+
+                TxTypeFeeDelegatedAccountUpdate rawTransaction = TxTypeFeeDelegatedAccountUpdate
+                                .decodeFromRawTransaction(signedMessage);
+
+                System.out.println("TxType : " + rawTransaction.getKlayType());
+        }
+
+}
+    
+```
+---
+
+Creating sender and fee payer credentials using private keys.
+
+
+```java FeeDelegatedAccountUpdateExample.java focus=28:29
+
+```
+
+
+---
+
+Gas price and gas limit settings
+
+
+```java FeeDelegatedAccountUpdateExample.java focus=30:31
+
+```
+
+
+---
+Getting chain ID from the network
+
+
+
+```java FeeDelegatedAccountUpdateExample.java focus=33
+
+```
+
+
+---
+Getting the nonce for the sender's address
+
+
+
+```java FeeDelegatedAccountUpdateExample.java focus=35:36
+
+```
+
+
+---
+
+Generating a new public key for account update
+
+
+```java FeeDelegatedAccountUpdateExample.java focus=38
+
+```
+
+
+---
+
+Creating a raw transaction for account update
+
+
+```java FeeDelegatedAccountUpdateExample.java focus=44
+
+```
+
+
+---
+
+Signing the transaction as sender. 
+
+
+```java FeeDelegatedAccountUpdateExample.java focus=52:53
+
+```
+
+---
+
+Signing the transaction as fee payer. 
+
+
+```java FeeDelegatedAccountUpdateExample.java focus=55:56
+
+```
+---
+Sending the signed transaction
+
+
+
+```java FeeDelegatedAccountUpdateExample.java focus=58:60
+
+```
+
+
+---
+
+Getting the transaction receipt
+
+
+```java FeeDelegatedAccountUpdateExample.java focus=61:68
+
+```
+
+
+---
+Decoding the raw transaction to get the transaction type
+
+
+
+```java FeeDelegatedAccountUpdateExample.java focus=74
+
+```
+
+
+
+
+</CH.Spotlight>

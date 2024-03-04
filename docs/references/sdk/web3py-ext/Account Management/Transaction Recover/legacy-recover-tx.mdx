@@ -1,0 +1,140 @@
+# Legacy Account Key
+
+<CH.Spotlight>
+<CH.Code>
+
+```py web3_legacy_value_transfer_sign_recover.py
+from web3py_ext import extend
+from web3 import Web3
+from eth_account import Account
+from web3py_ext.transaction.transaction import (
+    fill_transaction,
+)
+
+w3 = Web3(Web3.HTTPProvider(
+    'https://public-en-baobab.klaytn.net'
+))
+
+def web3_legacy_value_transfer_sign_recover():
+    user = Account.from_key('0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8')
+    value_transfer_tx = {
+        'from' : user.address,
+        'to' : user.address,
+        'value' : Web3.to_peb(10, "klay"),
+    }
+    value_transfer_tx = fill_transaction(value_transfer_tx, w3)
+    signed_tx = Account.sign_transaction(value_transfer_tx, user.key)
+    recovered_tx = Account.recover_transaction(signed_tx.rawTransaction)
+    print("\nsender", user.address, "\nrecovered", recovered_tx)
+
+web3_legacy_value_transfer_sign_recover()
+
+```
+---
+```zsh output
+❯ py web3_legacy_value_transfer_sign_recover.py
+sender 0xA2a8854b1802D8Cd5De631E690817c253d6a9153
+recovered 0xA2a8854b1802D8Cd5De631E690817c253d6a9153
+```
+</CH.Code>
+
+---
+Import **extend** from **web3py_ext** to extend web3 to klaytn web3
+```py web3_legacy_value_transfer_sign_recover.py focus=1:2
+
+```
+
+---
+Import necessary utils from **web3** and **eth_account**
+```py web3_legacy_value_transfer_sign_recover.py focus=3:6
+
+```
+
+---
+Define a web3 connection using **Web3.HTTPProvider** and RPC endpoint
+```py web3_legacy_value_transfer_sign_recover.py focus=8:10
+
+```
+---
+
+Also, you can change the provider URL from **baobab** to **allthatnode**
+```py web3_legacy_value_transfer_sign_recover.py focus=8:10
+from web3py_ext import extend
+from web3 import Web3
+from eth_account import Account
+from web3py_ext.transaction.transaction import (
+    fill_transaction,
+)
+
+w3 = Web3(Web3.HTTPProvider(
+    'https://klaytn-mainnet-rpc.allthatnode.com:8551'
+))
+
+def web3_legacy_value_transfer_sign_recover():
+    user = Account.from_key('0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8')
+    value_transfer_tx = {
+        'from' : user.address,
+        'to' : user.address,
+        'value' : Web3.to_peb(10, "klay"),
+    }
+    value_transfer_tx = fill_transaction(value_transfer_tx, w3)
+    signed_tx = Account.sign_transaction(value_transfer_tx, user.key)
+    recovered_tx = Account.recover_transaction(signed_tx.rawTransaction)
+    print("\nsender", user.address, "\nrecovered", recovered_tx)
+
+web3_legacy_value_transfer_sign_recover()\
+```
+---
+
+Define a sender wallet from private key using **Account.from_key**
+```py web3_legacy_value_transfer_sign_recover.py focus=13
+
+```
+---
+
+Create a **transaction** with **from**, **to** and **value** fields to transfer.
+```py web3_legacy_value_transfer_sign_recover.py focus=14:18
+
+```
+---
+
+**from**: the sender's address, **to**: target address to receive klay.
+```py web3_legacy_value_transfer_sign_recover.py focus=15:16
+
+```
+---
+
+**value** field means how many klay you want to send and you can use the **Web3.to_peb** utils to convert klay to peb unit.
+```py web3_legacy_value_transfer_sign_recover.py focus=17
+
+```
+---
+
+Use **fill_transaction** to add **rest of the fields** of the transaction like **gas limit**, **Nonce**, etc. You can print all the fields after this line if you want to see
+```py web3_legacy_value_transfer_sign_recover.py focus=4:6,19
+
+```
+---
+
+Sign the transaction with sender private key
+```py web3_legacy_value_transfer_sign_recover.py focus=20
+
+```
+---
+
+Recover sender address with **Account.recover_transaction** from signed transaction
+<CH.Code>
+```py web3_legacy_value_transfer_sign_recover.py focus=21:22
+
+```
+---
+
+```zsh output
+❯ python txTypeLegacyTransaction.py
+sender 0xA2a8854b1802D8Cd5De631E690817c253d6a9153
+recovered 0xA2a8854b1802D8Cd5De631E690817c253d6a9153
+```
+
+</CH.Code>
+
+</CH.Spotlight>

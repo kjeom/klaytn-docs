@@ -1,0 +1,146 @@
+TxTypeLegacyTransaction represents a type of transactions existed previously in Klaytn.
+
+\*\*This type of transaction can create an account, transfer tokens, deploy a smart contract, execute a smart contract, or perform a mix of aforementioned.
+
+<CH.Spotlight>
+
+<CH.Code>
+
+```js txTypeLegacyTransaction.js
+const ethers = require('ethers')
+const { Wallet } = require('@klaytn/ethers-ext')
+const senderAddr = '0xa2a8854b1802d8cd5de631e690817c253d6a9153'
+const senderPriv =
+  '0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8'
+const recieverAddr = '0xc40b6909eb7085590e1c26cb3becc25368e249e9'
+async function main() {
+  const provider = new ethers.providers.JsonRpcProvider(
+    'https://public-en-baobab.klaytn.net'
+  )
+  const wallet = new Wallet(senderPriv, provider)
+  const tx = {
+    to: recieverAddr,
+    value: parseKlay("100000000000"),
+    from: senderAddr,
+  }
+  const sentTx = await wallet.sendTransaction(tx)
+  console.log('sentTx', sentTx)
+  const rc = await sentTx.wait()
+  console.log('receipt', rc)
+}
+main()
+```
+
+---
+
+```zsh output
+❯ node txTypeLegacyTransaction.js
+3.523785565427238379
+0xa02e0i90faef4323cb542312de9aac0
+```
+
+</CH.Code>
+
+---
+
+Import the `ethers` package that can interact with the Ethereum Blockchain and its ecosystem.
+
+```js txTypeLegacyTransaction.js focus=1
+
+```
+
+---
+Import the `Wallet` class from `@klaytn/ethers-ext`  that can init wallet instance by private key
+```js txTypeLegacyTransaction.js focus=2
+
+```
+
+---
+Define sender address, sender private key and reciever address
+```js txTypeLegacyTransaction.js focus=3:6
+
+```
+
+---
+
+Setup the provider. A provider in ethers is a read-only abstraction to access the blockchain data.
+
+```js txTypeLegacyTransaction.js focus=8:10
+
+```
+---
+
+Also, you can change the default provider. For example, using the alchemy provider.
+
+```js txTypeLegacyTransaction.js focus=8:10
+const ethers = require('ethers')
+const { Wallet } = require('@klaytn/ethers-ext')
+const senderAddr = '0xa2a8854b1802d8cd5de631e690817c253d6a9153'
+const senderPriv =
+  '0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8'
+const recieverAddr = '0xc40b6909eb7085590e1c26cb3becc25368e249e9'
+async function main() {
+  const provider = new ethers.providers.JsonRpcProvider(
+    'https://klaytn-mainnet-rpc.allthatnode.com:8551'
+  )
+  const wallet = new Wallet(senderPriv, provider)
+  const tx = {
+    to: recieverAddr,
+    value: parseKlay("100000000000"),
+    from: senderAddr,
+  }
+  const sentTx = await wallet.sendTransaction(tx)
+  console.log('sentTx', sentTx)
+  const rc = await sentTx.wait()
+  console.log('receipt', rc)
+}
+main()
+```
+---
+
+Init Wallet instance to interact.
+
+```js txTypeLegacyTransaction.js focus=11
+
+```
+---
+Define transaction data.
+
+```js txTypeLegacyTransaction.js focus=12:16
+
+```
+---
+
+The **sendTransaction** method send transaction into blockchain.
+
+```js txTypeLegacyTransaction.js focus=17:18
+
+```
+---
+
+The **getReceipt** method returns the receipt of transaction.
+
+```js txTypeLegacyTransaction.js focus=19:20
+
+```
+---
+
+Finally, see the result.
+
+<CH.Code>
+
+```js txTypeLegacyTransaction.js focus=17:20
+
+```
+
+---
+
+```zsh output
+❯ node txTypeLegacyTransaction.js
+3.523785565427238379
+0xa02e0i90faef4323cb542312de9aac0
+```
+
+</CH.Code>
+
+</CH.Spotlight>

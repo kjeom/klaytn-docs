@@ -1,0 +1,107 @@
+TxTypeLegacyTransaction represents a type of transactions existed previously in Klaytn.
+
+\*\*This type of transaction can create an account, transfer tokens, deploy a smart contract, execute a smart contract, or perform a mix of aforementioned.
+
+<CH.Spotlight>
+
+<CH.Code>
+
+```js txTypeLegacyTransaction.js
+const { Web3, KlaytnWeb3, toPeb } = require("@klaytn/web3js-ext");
+const senderAddr = "0x24e8efd18d65bcb6b3ba15a4698c0b0d69d13ff7";
+const senderPriv = "0x4a72b3d09c3d5e28e8652e0111f9c4ce252e8299aad95bb219a38eb0a3f4da49";
+const receiverAddr = "0xc40b6909eb7085590e1c26cb3becc25368e249e9";
+async function main() {
+  const provider = new Web3.providers.HttpProvider("https://public-en-baobab.klaytn.net");
+  const web3 = new KlaytnWeb3(provider);
+  const tx = {
+    to: receiverAddr,
+    value: toPeb("0.01", "KLAY"),
+    from: senderAddr,
+  };
+  const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
+  const senderTx = await web3.eth.accounts.signTransaction(tx, senderAccount.privateKey);
+  console.log(senderTx);
+  const sendResult = await web3.eth.sendSignedTransaction(senderTx.rawTransaction);
+  const receipt = await web3.eth.getTransactionReceipt(sendResult.transactionHash);
+  console.log({ receipt });
+}
+main();
+```
+
+---
+
+```zsh output
+❯ node txTypeLegacyTransaction.js
+0xa02e0i90faef4323cb542312de9aac0
+```
+
+</CH.Code>
+
+---
+
+Import the `web3` and `@klaytn/web3js-ext` packages  that can interact with the Ethereum Blockchain and its ecosystem.
+
+```js txTypeLegacyTransaction.js focus=1
+
+```
+
+---
+Define sender address, sender private key, receiver address
+```js txTypeLegacyTransaction.js focus=2:4
+
+```
+
+---
+
+Setup the provider. A provider in web3 is a read-only abstraction to access the blockchain data.
+```js txTypeLegacyTransaction.js focus=6:7
+
+```
+---
+Define transaction data
+```js txTypeLegacyTransaction.js focus=8:12
+```
+---
+The **privateKeyToAccount** method create account instance.
+
+```js txTypeLegacyTransaction.js focus=13
+
+```
+---
+The **signTransaction** method sign transaction by account instance.
+
+```js txTypeLegacyTransaction.js focus=14:15
+
+```
+---
+The **sendSignedTransaction** method send transaction signed into blockchain.
+
+```js txTypeLegacyTransaction.js focus=16
+
+```
+---
+
+The **getTransactionReceipt** method returns the receipt of transaction.
+
+```js txTypeLegacyTransaction.js focus=17:18
+
+```
+---
+
+Finally, get the result.
+<CH.Code>
+
+```js txTypeLegacyTransaction.js focus=18
+
+```
+--- 
+
+```zsh output
+❯ node txTypeLegacyTransaction.js
+0xa02e0i90faef4323cb542312de9aac0
+```
+
+</CH.Code>
+
+</CH.Spotlight>
