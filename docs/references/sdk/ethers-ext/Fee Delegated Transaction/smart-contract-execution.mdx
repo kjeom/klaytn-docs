@@ -4,51 +4,49 @@
 <CH.Spotlight>
 <CH.Code>
 
-```js FeeDelegatedSmartContractExecutionWithRatio.js
-const { Wallet, TxType } = require("@klaytn/ethers-ext");
+```js FeeDelegatedSmartContractExecution.js
 const ethers = require("ethers");
+
+const { Wallet, TxType } = require("@klaytn/ethers-ext");
 
 const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
 const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
 const feePayerAddr = "0xcb0eb737dfda52756495a5e08a9b37aab3b271da";
 const feePayerPriv = "0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4";
 
+const provider = new ethers.providers.JsonRpcProvider("https://public-en-baobab.klaytn.net");
+const senderWallet = new Wallet(senderPriv, provider);
+const feePayerWallet = new Wallet(feePayerPriv, provider);
+
+const contractAddr = "0x95Be48607498109030592C08aDC9577c7C2dD505";
+const abi = ["function setNumber(uint256 newNumber)"];
+
 async function main() {
-  const provider = new ethers.providers.JsonRpcProvider("https://public-en-baobab.klaytn.net");
-  const senderWallet = new Wallet(senderPriv, provider);
-  const feePayerWallet = new Wallet(feePayerPriv, provider);
+  const contract = new ethers.Contract(contractAddr, abi, provider);
+  const data = contract.interface.encodeFunctionData("setNumber", ["0x123"]);
 
-  const CONTRACT_ADDRESS = "0xcc18eC0261AADbe5fB5a7854449FC26b4F428653";
-  const CONTRACT_ABI = ["function setNumber(uint256 newNumber) public", "function increment() public"];
-  const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
-  const param = contract.interface.encodeFunctionData("setNumber", ["0x123"]);
-
-  let tx = {
-    type: TxType.FeeDelegatedSmartContractExecutionWithRatio,
+  const tx = {
+    type: TxType.FeeDelegatedSmartContractExecution,
     from: senderAddr,
-    to: CONTRACT_ADDRESS,
+    to: contractAddr,
     value: 0,
-    input: param,
-    gasLimit: 100000,
-    feeRatio: 30,
+    data: data,
   };
 
-  tx = await senderWallet.populateTransaction(tx);
-  console.log(tx);
-
-  const senderTxHashRLP = await senderWallet.signTransaction(tx);
+  // Sign transaction by sender
+  const populatedTx = await senderWallet.populateTransaction(tx);
+  const senderTxHashRLP = await senderWallet.signTransaction(populatedTx);
   console.log("senderTxHashRLP", senderTxHashRLP);
 
+  // Sign and send transaction by fee payer
   const sentTx = await feePayerWallet.sendTransactionAsFeePayer(senderTxHashRLP);
-  console.log("sentTx", sentTx);
+  console.log("sentTx", sentTx.hash);
 
-  const rc = await sentTx.wait();
-  console.log("receipt", rc);
+  const receipt = await sentTx.wait();
+  console.log("receipt", receipt);
 }
 
 main();
-
-
 ```
 
 
@@ -56,7 +54,7 @@ main();
 
 ---
 ```zsh output
-❯ node FeeDelegatedSmartContractExecutionWithRatio.js
+❯ node FeeDelegatedSmartContractExecution.js
 output
 ```
 </CH.Code>
@@ -65,86 +63,181 @@ output
 ---
 Import necessary utils from ethers and klaytn/ethers-ext
 
-```js FeeDelegatedSmartContractExecutionWithRatio.js focus=1:2
+```js FeeDelegatedSmartContractExecution.js focus=1:3
 
 ```
 ---
 Define sender and fee payer addresses and private keys
 
-```js FeeDelegatedSmartContractExecutionWithRatio.js focus=4:7
+```js FeeDelegatedSmartContractExecution.js focus=5:8
 
 ```
 ---
 
 Connect to the Baobab testnet
 
-```js FeeDelegatedSmartContractExecutionWithRatio.js focus=10
+```js FeeDelegatedSmartContractExecution.js focus=10
 
+```
+---
+
+Also, you can change the default provider. For example, using the alchemy provider.
+
+```js FeeDelegatedSmartContractExecution.js focus=10
+const ethers = require("ethers");
+
+const { Wallet, TxType } = require("@klaytn/ethers-ext");
+
+const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
+const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+const feePayerAddr = "0xcb0eb737dfda52756495a5e08a9b37aab3b271da";
+const feePayerPriv = "0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4";
+
+const provider = new ethers.providers.JsonRpcProvider("https://klaytn-mainnet-rpc.allthatnode.com:8551");
+const senderWallet = new Wallet(senderPriv, provider);
+const feePayerWallet = new Wallet(feePayerPriv, provider);
+
+const contractAddr = "0x95Be48607498109030592C08aDC9577c7C2dD505";
+const abi = ["function setNumber(uint256 newNumber)"];
+
+async function main() {
+  const contract = new ethers.Contract(contractAddr, abi, provider);
+  const data = contract.interface.encodeFunctionData("setNumber", ["0x123"]);
+
+  const tx = {
+    type: TxType.FeeDelegatedSmartContractExecution,
+    from: senderAddr,
+    to: contractAddr,
+    value: 0,
+    data: data,
+  };
+
+  // Sign transaction by sender
+  const populatedTx = await senderWallet.populateTransaction(tx);
+  const senderTxHashRLP = await senderWallet.signTransaction(populatedTx);
+  console.log("senderTxHashRLP", senderTxHashRLP);
+
+  // Sign and send transaction by fee payer
+  const sentTx = await feePayerWallet.sendTransactionAsFeePayer(senderTxHashRLP);
+  console.log("sentTx", sentTx.hash);
+
+  const receipt = await sentTx.wait();
+  console.log("receipt", receipt);
+}
+
+main();
 ```
 ---
 
 Create sender and fee payer wallets
 
-```js FeeDelegatedSmartContractExecutionWithRatio.js focus=11:12
+```js FeeDelegatedSmartContractExecution.js focus=11:12
 
 ```
 ---
 
 Define the contract address and ABI
 
-```js FeeDelegatedSmartContractExecutionWithRatio.js focus=14:15
+```js FeeDelegatedSmartContractExecution.js focus=14:15
 
 ```
 ---
 Create a contract instance
-
-
-```js FeeDelegatedSmartContractExecutionWithRatio.js focus=16
+```js FeeDelegatedSmartContractExecution.js focus=18
 
 ```
 ---
 
 Encode the function data for the "setNumber" function
-
-```js FeeDelegatedSmartContractExecutionWithRatio.js focus=17
-
-```
----
-Build the transaction object with fee ratio
-
-
-```js FeeDelegatedSmartContractExecutionWithRatio.js focus=19:27
+```js FeeDelegatedSmartContractExecution.js focus=19
 
 ```
 ---
+Build the transaction object with type **FeeDelegatedSmartContractExecution**
+```js FeeDelegatedSmartContractExecution.js focus=19:27
 
+```
+---
 Populate the transaction with necessary details
-
-```js FeeDelegatedSmartContractExecutionWithRatio.js focus=29:30
+```js FeeDelegatedSmartContractExecution.js focus=30
 ```
-
-
 ---
 
 Sign the transaction by the sender
 
-```js FeeDelegatedSmartContractExecutionWithRatio.js focus=32:33
+<CH.Code>
+```js FeeDelegatedSmartContractExecution.js focus=31:32
 
 ```
 ---
 
-Send the transaction with fee delegation
+```zsh output
+❯ node FeeDelegatedSmartContractExecution.js
+senderTxHashRLP 0x31f8a6820355850ba43b7400830116379495be48607498109030592c08adc9577c7c2dd5058094a2a8854b1802d8cd5de631e690817c253d6a9153a43fb5c1cb0000000000000000000000000000000000000000000000000000000000000123f847f8458207f5a0831b71d0a0e4c9f14f6d59fda140f15e5f77738d58466e0e3b11baf67a3a9bd4a03f16a7e78d82ee96ebaafa0bbc691b78e7cc63a294e499c48c16f057f3f8a0d9
+```
 
-```js FeeDelegatedSmartContractExecutionWithRatio.js focus=35:36
+</CH.Code>
+---
+Send the transaction with fee delegation
+<CH.Code>
+```js FeeDelegatedSmartContractExecution.js focus=34:36
 
 ```
+
+
+---
+
+```zsh output
+❯ node FeeDelegatedSmartContractExecution.js
+sentTx 0x4147867b19c609e85c2349a78429eaa9d5e6c96e1893b44c5a1159801672119b
+```
+
+</CH.Code>
 ---
 Wait for the transaction receipt
 
+<CH.Code>
 
-```js FeeDelegatedSmartContractExecutionWithRatio.js focus=38:39
+```js FeeDelegatedSmartContractExecution.js focus=38:39
 
 ```
 
+
+---
+
+```zsh output
+❯ node FeeDelegatedSmartContractExecution.js
+receipt {
+  to: '0x95Be48607498109030592C08aDC9577c7C2dD505',
+  from: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
+  contractAddress: null,
+  transactionIndex: 0,
+  gasUsed: BigNumber { _hex: '0x9659', _isBigNumber: true },
+  logsBloom: '0x00000000000040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000001200000002',
+  blockHash: '0x79534bab10fc2af347aa3164959825a0dd587471e2f864102cae3f6167202dcb',
+  transactionHash: '0x4147867b19c609e85c2349a78429eaa9d5e6c96e1893b44c5a1159801672119b',
+  logs: [
+    {
+      transactionIndex: 0,
+      blockNumber: 146757423,
+      transactionHash: '0x4147867b19c609e85c2349a78429eaa9d5e6c96e1893b44c5a1159801672119b',
+      address: '0x95Be48607498109030592C08aDC9577c7C2dD505',
+      topics: [Array],
+      data: '0x0000000000000000000000000000000000000000000000000000000000000123',
+      logIndex: 0,
+      blockHash: '0x79534bab10fc2af347aa3164959825a0dd587471e2f864102cae3f6167202dcb'
+    }
+  ],
+  blockNumber: 146757423,
+  confirmations: 1,
+  cumulativeGasUsed: BigNumber { _hex: '0x9659', _isBigNumber: true },
+  effectiveGasPrice: BigNumber { _hex: '0x05d21dba00', _isBigNumber: true },
+  status: 1,
+  type: 0,
+  byzantium: true
+}
+```
+
+</CH.Code>
 
 </CH.Spotlight>

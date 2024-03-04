@@ -121,9 +121,21 @@ Update the account
 ```
 ---
 create 3 different public key froms pre-defined private keys
+<CH.Code>
 ```js roleBasedAccountKey.js focus=15:18
 
 ```
+---
+```zsh output
+❯ node roleBasedAccountKey.js
+{
+  pub1: '0x03f26489914098c5da51f0f646e3000da4d6197217df082b4f7ce1530f0a0cbf2a',
+  pub2: '0x0263021199702b9fefca617bdcb2a9ed4a810dfa8d270d4e804a1e778450e63ec3',
+  pub3: '0x03dc9dccbd788c00fa98f7f4082f2f714e799bc0c29d63f04d48b54fe6250453cd'
+}
+```
+</CH.Code>
+
 ---
 create a transaction object to update sender account with new private key
 ```js roleBasedAccountKey.js focus=20:32
@@ -132,14 +144,47 @@ create a transaction object to update sender account with new private key
 ---
 
 Use the **updaterWallet** wallet to send the transaction to network
+<CH.Code>
 ```js roleBasedAccountKey.js focus=34:35
 
 ```
 ---
+```zsh output
+❯ node roleBasedAccountKey.js
+sentTx 0x7fc56a7dfec99fd85aae247272df02b846555712487ddf712ce498354606f6d1
+```
+</CH.Code>
+
+---
 Wait for the transaction receipt
+<CH.Code>
 ```js roleBasedAccountKey.js focus=37:38
 
 ```
+---
+```zsh output
+❯ node roleBasedAccountKey.js
+receipt {
+  to: '0x5bD2fb3c21564C023A4A735935a2B7A238C4cCEA',
+  from: '0x5bD2fb3c21564C023A4A735935a2B7A238C4cCEA',
+  contractAddress: null,
+  transactionIndex: 1,
+  gasUsed: BigNumber { _hex: '0x013c68', _isBigNumber: true },
+  logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  blockHash: '0x293eb03000f93ca844c979cda7cd66399f7214a7df796f170a9e935a1e1e5bd0',
+  transactionHash: '0x7fc56a7dfec99fd85aae247272df02b846555712487ddf712ce498354606f6d1',
+  logs: [],
+  blockNumber: 146833645,
+  confirmations: 7,
+  cumulativeGasUsed: BigNumber { _hex: '0x043bc1', _isBigNumber: true },
+  effectiveGasPrice: BigNumber { _hex: '0x05d21dba00', _isBigNumber: true },
+  status: 1,
+  type: 0,
+  byzantium: true
+}
+```
+</CH.Code>
+
 ---
 Send a transfer transaction
 ```js roleBasedAccountKey.js focus=72
@@ -152,14 +197,47 @@ Create a transfer transaction object
 ```
 ---
 Use the **txWallet** wallet to send the transaction to network
+<CH.Code>
 ```js roleBasedAccountKey.js focus=50:51
 
 ```
 ---
+```zsh output
+❯ node roleBasedAccountKey.js
+sentTx 0xe05c9f7838987c5dc5d205827d8ef68b17c37d6fac4fd44b1a9bed5e2be30639
+```
+</CH.Code>
+
+---
 Wait for the transaction receipt
+<CH.Code>
 ```js roleBasedAccountKey.js focus=53:54
 
 ```
+---
+```zsh output
+❯ node roleBasedAccountKey.js
+receipt {
+  to: '0xC40B6909EB7085590E1c26Cb3beCC25368e249E9',
+  from: '0x5bD2fb3c21564C023A4A735935a2B7A238C4cCEA',
+  contractAddress: null,
+  transactionIndex: 0,
+  gasUsed: BigNumber { _hex: '0x5208', _isBigNumber: true },
+  logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  blockHash: '0x674eac425b85190728fac508c871c5db21dd83ea26f9cb13a96270cf5d7a7a30',
+  transactionHash: '0xe05c9f7838987c5dc5d205827d8ef68b17c37d6fac4fd44b1a9bed5e2be30639',
+  logs: [],
+  blockNumber: 146833659,
+  confirmations: 1,
+  cumulativeGasUsed: BigNumber { _hex: '0x5208', _isBigNumber: true },
+  effectiveGasPrice: BigNumber { _hex: '0x05d21dba00', _isBigNumber: true },
+  status: 1,
+  type: 0,
+  byzantium: true
+}
+```
+</CH.Code>
+
 ---
 Recover the address from message
 ```js roleBasedAccountKey.js focus=73
@@ -167,19 +245,47 @@ Recover the address from message
 ```
 ---
 sign a message with the txWallet
+<CH.Code>
 ```js roleBasedAccountKey.js focus=58:61
 
 ```
 ---
+```zsh output
+❯ node roleBasedAccountKey.js
+{
+  senderAddr: '0x5bd2fb3c21564c023a4a735935a2b7a238c4ccea',
+  msg: 'hello',
+  msghex: '0x68656c6c6f',
+  sig: '0x4bb3156dfd3349b974222b9ed754a3835802d920b63e8c07f41a75a174ce99d92a70d62e7a4b30d18599de61a882c59c0fd726883e3ce9955f8d5f60ce5b65211c'
+}
+```
+</CH.Code>
+
+---
 Retreive wallet address from the signed message
+<CH.Code>
 ```js roleBasedAccountKey.js focus=63:64
 
 ```
 ---
+```zsh output
+❯ node roleBasedAccountKey.js
+recoveredAddr lib 0xe15Cd70A41dfb05e7214004d7D054801b2a2f06b false
+```
+</CH.Code>
+
+---
 Recover the address from message use klay_recoverFromMessage
+<CH.Code>
 ```js roleBasedAccountKey.js focus=66:67
 
 ```
+---
+```zsh output
+❯ node roleBasedAccountKey.js
+recoveredAddr rpc 0xe15cd70a41dfb05e7214004d7d054801b2a2f06b false
+```
+</CH.Code>
 
 
 </CH.Spotlight>
