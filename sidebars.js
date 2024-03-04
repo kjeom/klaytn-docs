@@ -522,7 +522,7 @@ const sidebars = {
         },
         {
           type: 'category',
-          label: 'caver',
+          label: 'caver-js',
           items: [
             {
               type: 'category',
@@ -633,6 +633,12 @@ const sidebars = {
                 'references/sdk/caver-js-1.4.1/porting-from-web3.js',
               ],
             },
+          ]
+        },
+        {
+          type: 'category',
+          label: 'caver-java',
+          items: [
             {
               type: 'category',
               label: 'caver-java (1.5.0 or later)',
